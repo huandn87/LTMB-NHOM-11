@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/DEN_NEN"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginTop="32dp" android:text="Tạo tài khoản"
+        android:textColor="@color/white" android:textSize="26sp" android:textStyle="bold" />
+
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginTop="8dp" android:layout_marginBottom="28dp"
+        android:text="Thiết lập thông tin đăng nhập của bạn"
+        android:textColor="#A0A0A0" android:textSize="14sp" />
+
+    <!-- Số điện thoại (hiển thị, không chỉnh được) -->
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="Số điện thoại" android:textColor="@color/white" android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/EDT_TEN_TAI_KHOAN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:enabled="false"
+        android:text=""
+        android:textColor="#808080"
+        android:backgroundTint="#404040"
+        android:padding="12dp" />
+
+    <!-- Tên đăng nhập (username - bắt buộc nhập) -->
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="Tên đăng nhập *" android:textColor="@color/white" android:textStyle="bold" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        app:boxStrokeColor="@color/XANH_NEON"
+        app:hintTextColor="@color/XANH_NEON"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/EDT_USERNAME"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="VD: user001, ten_cua_ban"
+            android:inputType="text"
+            android:textColor="@color/white"
+            android:textColorHint="#606060" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Mật khẩu -->
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="Mật khẩu *" android:textColor="@color/white" android:textStyle="bold" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:boxStrokeColor="@color/XANH_NEON"
+        app:hintTextColor="@color/XANH_NEON"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="@color/XANH_NEON"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/EDT_MAT_KHAU"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ít nhất 6 ký tự"
+            android:inputType="textPassword"
+            android:textColor="@color/white"
+            android:textColorHint="#606060" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+    <com.google.android.material.button.MaterialButton android:id="@+id/BTN_HOAN_THANH"
+        android:layout_width="match_parent" android:layout_height="60dp"
+        android:backgroundTint="@color/XANH_NEON" android:text="Hoàn thành"
+        android:textColor="@color/white" android:textStyle="bold"
+        app:cornerRadius="30dp" />
+
+</LinearLayout>

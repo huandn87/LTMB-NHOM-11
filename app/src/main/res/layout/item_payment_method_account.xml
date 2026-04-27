@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="88dp" android:layout_marginBottom="18dp" android:background="@drawable/bg_account_card" android:gravity="center_vertical" android:orientation="horizontal" android:paddingHorizontal="24dp">
+    <FrameLayout
+        android:layout_width="52dp"
+        android:layout_height="52dp">
+        <ImageView
+            android:id="@+id/pm_logo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:visibility="gone" />
+        <TextView
+            android:id="@+id/pm_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_qr_circle"
+            android:gravity="center"
+            android:text="V"
+            android:textColor="#FFFFFF"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+    </FrameLayout>
+    <TextView android:id="@+id/pm_name" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="18dp" android:layout_weight="1" android:text="Ví EVCharge" android:textColor="#FFFFFF" android:textSize="18sp" android:textStyle="bold"/>
+    <TextView android:id="@+id/pm_status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Đã liên kết" android:textColor="#01B763" android:textSize="14sp"/>
+</LinearLayout>

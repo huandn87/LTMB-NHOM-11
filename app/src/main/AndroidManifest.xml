@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.voltapp">
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:theme="@style/Theme.VoltApp">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAMos1MQzPZ4zBYR9dnuY78B3TNA_iJahY" />
+
+        <activity
+            android:name=".onboarding.ManHinhCho"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".home.ChiDanDuong"
+            android:exported="false" />
+
+        <activity
+            android:name=".home.TramSacDaLuu"
+            android:exported="false" />
+
+        <activity
+            android:name=".onboarding.GioiThieu"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.DangNhap"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.NhapSdt"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.XacThucOtp"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.TaoMatKhau"
+            android:exported="false" />
+
+        <activity
+            android:name=".auth.QuenMatKhau"
+            android:exported="false" />
+
+        <activity
+            android:name=".profile.HoanThienHoSo"
+            android:exported="false" />
+
+        <activity
+            android:name=".vehicle.ChonXe"
+            android:exported="false" />
+
+        <activity
+            android:name=".vehicle.ChonHang"
+            android:exported="false" />
+
+        <activity
+            android:name=".home.ManHinhChinh"
+            android:exported="false" />
+
+        <activity
+            android:name=".vehicle.ChonModel"
+            android:exported="false" />
+
+        <activity
+            android:name=".vehicle.XacNhanXe"
+            android:exported="false" />
+
+        <activity
+            android:name=".vehicle.ThietLapHoanTat"
+            android:exported="false" />
+
+        <activity
+            android:name=".home.ChiTietTramSac"
+            android:exported="false" />
+
+        <activity android:name=".account.TaiKhoanActivity" android:exported="false" />
+        <activity android:name=".account.MyCarsActivity" android:exported="false" />
+        <activity android:name=".account.PaymentMethodsActivity" android:exported="false" />
+        <activity android:name=".account.PersonalInfoActivity" android:exported="false" />
+        <activity android:name=".account.SecurityActivity" android:exported="false" />
+        <activity android:name=".account.LanguageActivity" android:exported="false" />
+
+        <!-- Activities từ Dinhvijxe -->
+        <activity android:name=".map.DetailActivity" android:exported="false" />
+
+        <!-- Activities từ Wallet -->
+        <activity android:name=".wallet.WalletFeatureActivity" android:exported="false" android:theme="@style/Theme.VoltApp" />
+    </application>
+
+</manifest>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/DEN_NEN"
+    android:padding="24dp">
+
+    <ImageView
+        android:id="@+id/BTN_BACK_CHON_XE"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginTop="16dp"
+        android:src="@android:drawable/ic_menu_revert"
+        app:tint="@color/white" />
+
+    <TextView
+        android:id="@+id/TXT_TITLE"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/BTN_BACK_CHON_XE"
+        android:layout_marginTop="24dp"
+        android:text="Cá nhân hóa trải nghiệm của bạn bằng cách thêm phương tiện"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TXT_TITLE"
+        android:layout_marginTop="12dp"
+        android:text="Phương tiện được thêm để định nghĩa loại sạc phù hợp. Từ đó, tìm kiếm trạm sạc dễ dàng hơn."
+        android:textColor="#A0A0A0"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_launcher_background" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/BTN_DE_SAU"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/XAM_NUT"
+            android:text="Để sau"
+            android:textColor="@color/white"
+            app:cornerRadius="30dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/BTN_THEM_XE"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/XANH_NEON"
+            android:text="Thêm"
+            android:textColor="@color/white"
+            app:cornerRadius="30dp" />
+    </LinearLayout>
+</RelativeLayout>

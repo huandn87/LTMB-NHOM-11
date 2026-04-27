@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/BOTTOM_NAV_CONTAINER"
+    android:layout_width="match_parent"
+    android:layout_height="75dp"
+    android:background="#0F1115"
+    android:elevation="10dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:weightSum="5">
+
+    <!-- Trang chủ -->
+    <LinearLayout
+        android:id="@+id/NAV_HOME"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true">
+        <ImageView
+            android:id="@+id/NAV_HOME_ICON"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_today"
+            app:tint="#808080" />
+        <TextView
+            android:id="@+id/NAV_HOME_TEXT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Trang chủ"
+            android:textColor="#808080"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/NAV_SAVED"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true">
+        <ImageView
+            android:id="@+id/NAV_SAVED_ICON"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/btn_star_big_off"
+            app:tint="#808080" />
+        <TextView
+            android:id="@+id/NAV_SAVED_TEXT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Đã lưu"
+            android:textColor="#808080"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/NAV_SCAN"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:clickable="true"
+        android:focusable="true">
+        <View
+            android:layout_width="54dp"
+            android:layout_height="54dp"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_qr_circle" />
+        <ImageView
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:src="@drawable/scan"
+            app:tint="@color/white" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/NAV_WALLET"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true">
+        <ImageView
+            android:id="@+id/NAV_WALLET_ICON"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_view"
+            app:tint="#808080" />
+        <TextView
+            android:id="@+id/NAV_WALLET_TEXT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Ví tiền"
+            android:textColor="#808080"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/NAV_ACCOUNT"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:clickable="true"
+        android:focusable="true">
+        <ImageView
+            android:id="@+id/NAV_ACCOUNT_ICON"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_myplaces"
+            app:tint="#808080" />
+        <TextView
+            android:id="@+id/NAV_ACCOUNT_TEXT"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Tài khoản"
+            android:textColor="#808080"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+</LinearLayout>

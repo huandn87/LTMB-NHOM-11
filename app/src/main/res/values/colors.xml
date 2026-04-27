@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="DEN_NEN">#16181F</color>
+    <color name="XANH_NEON">#00D261</color>
+    <color name="XAM_NUT">#2A2D39</color>
+    <color name="VIEN_OTP">#3E424D</color>
+    <color name="bg_dark">#16181F</color>
+    <color name="volt_green">#00D261</color>
+    <color name="btn_dark">#2A2D39</color>
+
+    <!-- Wallet Colors -->
+    <color name="screen_background">#0D1117</color>
+    <color name="card_background">#171C27</color>
+    <color name="card_stroke">#253042</color>
+    <color name="brand_green">#00C56E</color>
+    <color name="success_green">#23D27C</color>
+    <color name="error_red">#FF6B6B</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B7C0CD</color>
+    <color name="text_hint">#7E8793</color>
+    <color name="badge_zalopay">#1475FF</color>
+    <color name="badge_visa">#0B0B0B</color>
+    <color name="badge_viettel">#FF445B</color>
+    <color name="badge_momo">#D82D8B</color>
+</resources>
