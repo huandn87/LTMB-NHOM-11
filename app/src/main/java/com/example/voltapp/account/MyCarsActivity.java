@@ -118,14 +118,39 @@ public class MyCarsActivity extends AppCompatActivity {
                         int actualCustomerId = arr.getJSONObject(0).getInt("customer_id");
                         fetchVehiclesByCustomerId(actualCustomerId);
                     } else {
-                        runOnUiThread(() -> {
-                            vehicles.clear();
-                            adapter.notifyDataSetChanged();
-                            Toast.makeText(MyCarsActivity.this, "Bạn chưa có xe nào. Hãy thêm xe mới!", Toast.LENGTH_SHORT).show();
-                        });
+                        // Thử tìm theo số điện thoại (trường hợp account_id bị thay đổi do test)
+                        String phone = prefs.getString("user_phone", "");
+                        if (!phone.isEmpty()) {
+                            String queryPhone = phone;
+                            try { queryPhone = java.net.URLEncoder.encode(phone, "UTF-8"); } catch (Exception ignored) {}
+                            
+                            api.get("khachhang?phone=eq." + queryPhone, new SupabaseService.ApiCallback() {
+                                @Override
+                                public void onSuccess(String json2) {
+                                    try {
+                                        JSONArray arr2 = new JSONArray(json2);
+                                        if (arr2.length() > 0) {
+                                            int actualCustomerId = arr2.getJSONObject(0).getInt("customer_id");
+                                            fetchVehiclesByCustomerId(actualCustomerId);
+                                        } else {
+                                            showEmptyState();
+                                        }
+                                    } catch (Exception e) {
+                                        showEmptyState();
+                                    }
+                                }
+                                @Override
+                                public void onError(String msg) {
+                                    showEmptyState();
+                                }
+                            });
+                        } else {
+                            showEmptyState();
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    showEmptyState();
                 }
             }
 
@@ -133,6 +158,14 @@ public class MyCarsActivity extends AppCompatActivity {
             public void onError(String message) {
                 runOnUiThread(() -> Toast.makeText(MyCarsActivity.this, "Lỗi lấy thông tin khách hàng: " + message, Toast.LENGTH_SHORT).show());
             }
+        });
+    }
+
+    private void showEmptyState() {
+        runOnUiThread(() -> {
+            vehicles.clear();
+            adapter.notifyDataSetChanged();
+            Toast.makeText(MyCarsActivity.this, "Bạn chưa có xe nào. Hãy thêm xe mới!", Toast.LENGTH_SHORT).show();
         });
     }
 
