@@ -191,7 +191,7 @@ public class TaoMatKhau extends AppCompatActivity {
                             .apply();
 
                     // Tạo bản ghi khachhang để hỗ trợ thêm xe sau này
-                    createCustomerRecord(finalId);
+                    createCustomerRecord(finalId, username);
 
                     runOnUiThread(() -> {
                         Toast.makeText(TaoMatKhau.this, "Tạo tài khoản thành công! 🎉", Toast.LENGTH_SHORT).show();
@@ -216,7 +216,7 @@ public class TaoMatKhau extends AppCompatActivity {
         });
     }
 
-    private void createCustomerRecord(int accountId) {
+    private void createCustomerRecord(int accountId, String username) {
         OkHttpClient client = new OkHttpClient();
         JSONObject json = new JSONObject();
         try {
