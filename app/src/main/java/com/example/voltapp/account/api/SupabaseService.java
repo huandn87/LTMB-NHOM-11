@@ -49,6 +49,25 @@ public class SupabaseService {
         });
     }
 
+    public void patch(String table, String json, ApiCallback callback) {
+        RequestBody body = RequestBody.create(json, MediaType.parse("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(SUPABASE_URL + "/rest/v1/" + table)
+                .addHeader("apikey", SUPABASE_KEY)
+                .addHeader("Authorization", "Bearer " + SUPABASE_KEY)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Prefer", "return=representation")
+                .patch(body)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override public void onFailure(Call call, IOException e) { callback.onError(e.getMessage()); }
+            @Override public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body() != null ? response.body().string() : "";
+                if (response.isSuccessful()) callback.onSuccess(responseBody); else callback.onError("HTTP " + response.code() + ": " + responseBody);
+            }
+        });
+    }
+
     public void deleteVehicle(int vehicleId, ApiCallback callback) {
         Request request = new Request.Builder()
                 .url(SUPABASE_URL + "/rest/v1/phuongtien?vehicle_id=eq." + vehicleId)

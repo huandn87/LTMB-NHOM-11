@@ -32,6 +32,11 @@ public class MyCarsActivity extends AppCompatActivity {
                 @Override public void onSuccess(String json) { runOnUiThread(() -> { vehicles.remove(position); adapter.notifyItemRemoved(position); }); }
                 @Override public void onError(String message) { runOnUiThread(() -> Toast.makeText(MyCarsActivity.this, "Lỗi xóa: " + message, Toast.LENGTH_SHORT).show()); }
             });
+        }, vehicle -> {
+            // Khi click vào xe, mở trang ChiTietXeActivity
+            Intent intent = new Intent(MyCarsActivity.this, com.example.voltapp.vehicle.ChiTietXeActivity.class);
+            intent.putExtra("VEHICLE_ID", vehicle.vehicleId);
+            startActivity(intent);
         });
         
         rv.setAdapter(adapter);

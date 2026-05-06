@@ -13,13 +13,17 @@ import java.util.List;
 
 public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleVH> {
     public interface OnDeleteClick { void onDelete(int position, Vehicle vehicle); }
+    public interface OnItemClick { void onItemClick(Vehicle vehicle); }
+    
     private final List<Vehicle> vehicles;
     private final OnDeleteClick onDeleteClick;
+    private final OnItemClick onItemClick;
     private int openedPosition = -1;
 
-    public VehicleAdapter(List<Vehicle> vehicles, OnDeleteClick onDeleteClick) {
+    public VehicleAdapter(List<Vehicle> vehicles, OnDeleteClick onDeleteClick, OnItemClick onItemClick) {
         this.vehicles = vehicles;
         this.onDeleteClick = onDeleteClick;
+        this.onItemClick = onItemClick;
     }
 
     @NonNull @Override public VehicleVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -31,15 +35,12 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.VehicleV
         Vehicle item = vehicles.get(position);
         h.txtName.setText(item.manufacturer);
         h.txtModel.setText(item.model);
-        float openedX = -86 * h.itemView.getResources().getDisplayMetrics().density;
-        h.foreground.setTranslationX(position == openedPosition ? openedX : 0);
-        h.btnArrow.setOnClickListener(v -> {
-            int old = openedPosition;
-            int current = h.getAdapterPosition();
-            openedPosition = (openedPosition == current) ? -1 : current;
-            if (old >= 0) notifyItemChanged(old);
-            if (openedPosition >= 0) notifyItemChanged(openedPosition);
-        });
+        h.foreground.setTranslationX(0); // Reset translation if it was swiped
+        
+        // Khi bấm vào mũi tên (hoặc cả item), mở màn hình Chi Tiết Xe
+        h.btnArrow.setOnClickListener(v -> onItemClick.onItemClick(item));
+        h.foreground.setOnClickListener(v -> onItemClick.onItemClick(item));
+        
         h.btnDelete.setOnClickListener(v -> onDeleteClick.onDelete(h.getAdapterPosition(), item));
     }
 
