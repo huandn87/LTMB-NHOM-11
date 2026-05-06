@@ -15,8 +15,8 @@ public class ThietLapHoanTat extends AppCompatActivity {
 
         // Đợi 2.5 giây (2500ms) để biểu diễn vòng xoay loading
         new Handler().postDelayed(() -> {
-            // Chuyển sang Trang Xe của tôi (MyCarsActivity)
-            Intent intent = new Intent(ThietLapHoanTat.this, com.example.voltapp.account.MyCarsActivity.class);
+            // Chuyển sang màn hình chính
+            Intent intent = new Intent(ThietLapHoanTat.this, ManHinhChinh.class);
             startActivity(intent);
             // Xóa sạch toàn bộ lịch sử các trang trước đó
             finish();

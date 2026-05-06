@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.voltapp.R;
 import com.example.voltapp.profile.HoanThienHoSo;
 import com.example.voltapp.home.ManHinhChinh;
+import com.example.voltapp.vehicle.ChonHang;
 import com.google.android.material.textfield.TextInputEditText;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -196,7 +197,7 @@ public class TaoMatKhau extends AppCompatActivity {
 
                     runOnUiThread(() -> {
                         Toast.makeText(TaoMatKhau.this, "Tạo tài khoản thành công! 🎉", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(TaoMatKhau.this, ManHinhChinh.class));
+                        startActivity(new Intent(TaoMatKhau.this, ChonHang.class));
                         finish();
                     });
                 } else {
