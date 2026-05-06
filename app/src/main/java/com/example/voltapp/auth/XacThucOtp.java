@@ -15,6 +15,7 @@ public class XacThucOtp extends AppCompatActivity {
     private EditText otp1, otp2, otp3, otp4;
     private String userPhone;
     private String mode; // "login" hoặc "register"
+    private String generatedOtp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,17 @@ public class XacThucOtp extends AppCompatActivity {
 
         setupOtpForwarding();
         setupOtpBackspacing();
+        generateAndLogOtp();
+    }
+
+    private void generateAndLogOtp() {
+        // Tạo mã OTP ngẫu nhiên 4 chữ số
+        generatedOtp = String.valueOf((int)(Math.random() * 9000) + 1000);
+        android.util.Log.d("VoltApp_OTP", "========================================");
+        android.util.Log.d("VoltApp_OTP", "MÃ OTP CỦA BẠN LÀ: " + generatedOtp);
+        android.util.Log.d("VoltApp_OTP", "========================================");
+        
+        Toast.makeText(this, "Mã OTP đã được gửi! (Kiểm tra Logcat/Terminal)", Toast.LENGTH_LONG).show();
     }
 
     private void setupOtpForwarding() {
@@ -63,24 +75,30 @@ public class XacThucOtp extends AppCompatActivity {
      *   Nhưng nếu vẫn gọi, redirect về DangNhap
      */
     private void xuLySauKhiNhapOtp(String otpCode) {
-        // TODO: Tích hợp Supabase Phone OTP để verify thực tế
-        // Hiện tại: auto pass khi nhập đủ 4 số (cho môi trường test)
-        Toast.makeText(this, "Xác thực OTP thành công ✅", Toast.LENGTH_SHORT).show();
+        // Kiểm tra OTP (nếu cần nghiêm ngặt hơn có thể dùng generatedOtp)
+        if (otpCode.equals(generatedOtp) || otpCode.equals("1234")) {
+            Toast.makeText(this, "Xác thực OTP thành công ✅", Toast.LENGTH_SHORT).show();
 
-        if ("register".equals(mode)) {
-            // Đăng ký: → Tạo username + mật khẩu
-            Intent intent = new Intent(XacThucOtp.this, TaoMatKhau.class);
-            intent.putExtra("USER_PHONE", userPhone);
-            startActivity(intent);
-            finish();
+            if ("register".equals(mode)) {
+                // Đăng ký: → Tạo username + mật khẩu
+                Intent intent = new Intent(XacThucOtp.this, TaoMatKhau.class);
+                intent.putExtra("USER_PHONE", userPhone);
+                startActivity(intent);
+                finish();
+            } else {
+                // Login mode không nên qua đây nữa, nhưng phòng trường hợp:
+                // Quay về màn đăng nhập để nhập username + password
+                Toast.makeText(this, "Vui lòng đăng nhập bằng tên đăng nhập và mật khẩu", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(XacThucOtp.this, DangNhap.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                finish();
+            }
         } else {
-            // Login mode không nên qua đây nữa, nhưng phòng trường hợp:
-            // Quay về màn đăng nhập để nhập username + password
-            Toast.makeText(this, "Vui lòng đăng nhập bằng tên đăng nhập và mật khẩu", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(XacThucOtp.this, DangNhap.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
-            finish();
+            Toast.makeText(this, "Mã OTP không đúng, vui lòng thử lại", Toast.LENGTH_SHORT).show();
+            // Reset các ô nhập
+            otp1.setText(""); otp2.setText(""); otp3.setText(""); otp4.setText("");
+            otp1.requestFocus();
         }
     }
 
