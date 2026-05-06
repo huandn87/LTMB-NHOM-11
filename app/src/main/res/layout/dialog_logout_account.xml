@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_dialog_dark" android:orientation="vertical" android:padding="26dp">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:text="Đăng xuất" android:textColor="#F75555" android:textSize="24sp" android:textStyle="bold"/>
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="22dp" android:background="#343740"/>
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:text="Bạn chắc chắn muốn thoát khỏi ứng dụng?" android:textColor="#C1C1C1" android:textSize="16sp"/>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="60dp" android:layout_marginTop="28dp" android:orientation="horizontal">
+        <TextView android:id="@+id/btn_cancel_logout" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginEnd="8dp" android:layout_weight="1" android:background="@drawable/bg_gray_pill" android:gravity="center" android:text="Không" android:textColor="#FFFFFF"/>
+        <TextView android:id="@+id/btn_confirm_logout" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="8dp" android:layout_weight="1" android:background="@drawable/bg_green_pill" android:gravity="center" android:text="Có" android:textColor="#FFFFFF"/>
+    </LinearLayout>
+</LinearLayout>

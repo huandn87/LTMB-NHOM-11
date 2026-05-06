@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <LinearLayout android:id="@+id/lang_vi" style="@style/LangRow"><TextView style="@style/LangText" android:text="Tiếng Việt"/><TextView style="@style/LangCheck"/></LinearLayout>
+    <LinearLayout android:id="@+id/lang_en" style="@style/LangRow"><TextView style="@style/LangText" android:text="Tiếng Anh"/><TextView style="@style/LangCheck"/></LinearLayout>
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#30333A" android:layout_marginVertical="12dp"/>
+    <TextView android:text="Ngôn ngữ" android:textColor="#FFFFFF" android:textSize="21sp" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="12dp"/>
+    <LinearLayout android:id="@+id/lang_cn" style="@style/LangRow"><TextView style="@style/LangText" android:text="Tiếng Trung"/><TextView style="@style/LangCheck"/></LinearLayout>
+    <LinearLayout android:id="@+id/lang_fr" style="@style/LangRow"><TextView style="@style/LangText" android:text="Tiếng Pháp"/><TextView style="@style/LangCheck"/></LinearLayout>
+    <LinearLayout android:id="@+id/lang_kr" style="@style/LangRow"><TextView style="@style/LangText" android:text="Tiếng Hàn"/><TextView style="@style/LangCheck"/></LinearLayout>
+    <LinearLayout android:id="@+id/lang_jp" style="@style/LangRow"><TextView style="@style/LangText" android:text="Tiếng Nhật"/><TextView style="@style/LangCheck"/></LinearLayout>
+    <LinearLayout android:id="@+id/lang_es" style="@style/LangRow"><TextView style="@style/LangText" android:text="Tiếng Tây Ban Nha"/><TextView style="@style/LangCheck"/></LinearLayout>
+    <LinearLayout android:id="@+id/lang_id" style="@style/LangRow"><TextView style="@style/LangText" android:text="Tiếng Indonesia"/><TextView style="@style/LangCheck"/></LinearLayout>
+    <LinearLayout android:id="@+id/lang_ru" style="@style/LangRow"><TextView style="@style/LangText" android:text="Tiếng Nga"/><TextView style="@style/LangCheck"/></LinearLayout>
+</LinearLayout>

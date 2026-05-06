@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/DEN_NEN"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Xin chào ! 👋"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Làm ơn hãy nhập số điện thoại của bạn phía bên dưới. Bạn sẽ nhận được một mã OTP để xác thực thông tin."
+        android:textColor="#A0A0A0" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:text="Số điện thoại"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="🇻🇳 +84" android:textColor="@color/white" android:textSize="16sp" />
+        <EditText android:id="@+id/EDT_SDT" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:backgroundTint="@color/XANH_NEON" android:hint="779 497 860" android:inputType="phone"
+            android:textColor="@color/white" android:textColorHint="#404040" />
+    </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/CHK_DONG_Y"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:buttonTint="@color/XANH_NEON"
+        android:text="Tôi đồng ý các điều khoản của ứng dụng ChangeOn"
+        android:textColor="#A0A0A0" />
+
+    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+    <com.google.android.material.button.MaterialButton android:id="@+id/BTN_TIEP_TUC_SDT"
+        android:layout_width="match_parent" android:layout_height="60dp"
+        android:backgroundTint="@color/XANH_NEON" android:text="Tiếp tục"
+        android:textColor="@color/white" app:cornerRadius="30dp" />
+</LinearLayout>

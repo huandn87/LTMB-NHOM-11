@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F1722">
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+
+    <LinearLayout
+        android:id="@+id/TOP_SEARCH_BAR"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_glass_search"
+        android:elevation="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+        <ImageView android:layout_width="20dp" android:layout_height="20dp" android:src="@android:drawable/ic_menu_search" app:tint="#B0B0B0" />
+        <EditText android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="10dp" android:background="@android:color/transparent" android:hint="Bạn muốn sạc ở đâu?" android:textColor="@color/white" android:textColorHint="#808080" />
+        <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@android:drawable/ic_menu_sort_by_size" app:tint="@color/XANH_NEON" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/TOP_SEARCH_BAR"
+        android:layout_marginTop="-8dp"
+        android:paddingStart="16dp"
+        android:scrollbars="none">
+        <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" android:paddingBottom="10dp">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_glass_search" android:backgroundTint="#2601B763" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:text="⚡ Sạc nhanh" android:textColor="@color/white" android:textSize="12sp" android:layout_marginEnd="8dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_glass_search" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:text="🟢 Đang trống" android:textColor="@color/white" android:textSize="12sp" android:layout_marginEnd="8dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_glass_search" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:text="💰 Giá rẻ" android:textColor="@color/white" android:textSize="12sp" android:layout_marginEnd="8dp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/bg_glass_search" android:paddingHorizontal="16dp" android:paddingVertical="8dp" android:text="⭐ 4.5+ sao" android:textColor="@color/white" android:textSize="12sp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <ScrollView
+        android:id="@+id/LAYOUT_DANH_SACH_TRAM"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/BOTTOM_NAV_CONTAINER"
+        android:layout_below="@id/TOP_SEARCH_BAR"
+        android:background="#0F1722"
+        android:elevation="10dp"
+        android:visibility="gone">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+            
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/SHIMMER_DANH_SACH"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:shimmer_auto_start="true"
+                app:shimmer_duration="1200">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <include layout="@layout/layout_shimmer_item" />
+                    <include layout="@layout/layout_shimmer_item" />
+                    <include layout="@layout/layout_shimmer_item" />
+                    <include layout="@layout/layout_shimmer_item" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <LinearLayout android:id="@+id/CONTAINER_LIST_TRAM" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/PANEL_THONG_TIN_TRAM"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/BOTTOM_NAV"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_otp_box"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:elevation="10dp"
+        android:visibility="gone">
+
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+            <TextView android:id="@+id/TXT_TEN_TRAM_MAP" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Trạm sạc số 1" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" />
+            <ImageView android:id="@+id/BTN_DIRECTIONS" android:layout_width="40dp" android:layout_height="40dp" android:layout_alignParentEnd="true" android:background="@drawable/bg_otp_box" android:backgroundTint="@color/XANH_NEON" android:padding="10dp" android:src="@android:drawable/ic_menu_directions" app:tint="@color/white" />
+            <TextView android:id="@+id/TXT_DIA_CHI_MAP" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="30dp" android:text="Số x, Đường A, phường B, TP C" android:textColor="#A0A0A0" android:textSize="14sp" />
+        </RelativeLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal" android:gravity="center_vertical">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4.3 ★★★★★" android:textColor="#FFC107" android:textSize="12sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="(107 reviews)" android:textColor="#808080" android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal">
+            <TextView android:id="@+id/TXT_TRANG_THAI_MAP" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="#FF4D4D" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:text="Đầy" android:textColor="@color/white" android:textSize="12sp" android:textStyle="bold" />
+            <TextView android:id="@+id/TXT_KHOANG_CACH_MAP" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="📍 1.9 Km" android:textColor="#D0D0D0" android:textSize="14sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="🚗 7 phút" android:textColor="#D0D0D0" android:textSize="14sp" />
+        </LinearLayout>
+
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="16dp" android:background="#2A2D39" />
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="horizontal" android:weightSum="2">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/BTN_XEM_TRAM"
+                android:layout_width="0dp" android:layout_height="50dp" android:layout_marginEnd="8dp" android:layout_weight="1"
+                android:text="Xem" android:textColor="#808080" android:backgroundTint="@color/DEN_NEN" app:strokeColor="#808080" app:strokeWidth="1dp" app:cornerRadius="25dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/BTN_LUU_TRAM_MAP"
+                android:layout_width="0dp" android:layout_height="50dp" android:layout_marginStart="8dp" android:layout_weight="1"
+                android:text="Lưu" android:textColor="@color/white" android:backgroundTint="@color/XANH_NEON" app:cornerRadius="25dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/BOTTOM_NAV"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/FAB_TOGGLE_VIEW"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:backgroundTint="@color/XANH_NEON"
+            android:src="@android:drawable/ic_menu_sort_by_size"
+            app:tint="@color/white" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/FAB_LOCATION"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/XANH_NEON"
+            android:src="@android:drawable/ic_menu_mylocation"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+    <include
+        layout="@layout/layout_bottom_nav"
+        android:id="@+id/BOTTOM_NAV_CONTAINER"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

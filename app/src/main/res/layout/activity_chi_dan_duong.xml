@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0F1722">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/map" />
+
+    <ImageView
+        android:id="@+id/PIN_DESTINATION"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="120dp"
+        android:src="@drawable/gas1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/PIN_DESTINATION"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/bg_otp_box"
+        android:backgroundTint="@color/XANH_NEON"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp"
+        android:text="1.3km - 4 phút"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_marginBottom="4dp"/>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/AVATAR_NAV"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="450dp"
+        app:cardCornerRadius="25dp"
+        app:cardElevation="5dp">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/avatar" />
+    </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/CAR_NAV"
+        android:layout_width="40dp"
+        android:layout_height="80dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="450dp"
+        android:src="@drawable/ic_car_red"
+        android:visibility="gone"
+        android:rotation="-15" /> <ImageView
+    android:id="@+id/BTN_BACK_NAV"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:layout_margin="16dp"
+    android:background="@drawable/bg_otp_box"
+    android:padding="10dp"
+    android:src="@android:drawable/ic_menu_revert"
+    app:tint="@color/white" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/PANEL_CHI_DAN"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/XANH_NEON"
+        android:src="@android:drawable/ic_menu_mylocation"
+        app:tint="@color/white" />
+
+    <LinearLayout
+        android:id="@+id/PANEL_CHI_DAN"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:background="@drawable/bg_otp_box"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:elevation="10dp">
+
+        <TextView android:id="@+id/TXT_TEN_TRAM_NAV" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Trạm sạc số 2" android:textColor="@color/white" android:textSize="22sp" android:textStyle="bold" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Số x, Đường A, phường B, TP C" android:textColor="#A0A0A0" android:textSize="14sp" />
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal">
+            <TextView android:id="@+id/TXT_TRANG_THAI_NAV" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@color/XANH_NEON" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:text="Có sẵn" android:textColor="@color/white" android:textSize="12sp" android:textStyle="bold" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="📍 1.3 Km" android:textColor="#D0D0D0" android:textSize="14sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="🚗 4 phút" android:textColor="#D0D0D0" android:textSize="14sp" />
+        </LinearLayout>
+
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:orientation="horizontal" android:weightSum="2">
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="0dp" android:layout_height="50dp" android:layout_marginEnd="8dp" android:layout_weight="1"
+                android:text="Nhập vị trí" android:textColor="#808080" android:backgroundTint="#2A2D39" app:cornerRadius="25dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/BTN_BAT_DAU"
+                android:layout_width="0dp" android:layout_height="50dp" android:layout_marginStart="8dp" android:layout_weight="1"
+                android:text="Bắt đầu" android:textColor="@color/white" android:backgroundTint="@color/XANH_NEON" app:cornerRadius="25dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

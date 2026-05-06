@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/DEN_NEN">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="220dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/viewgas" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#66000000" />
+
+                <ImageView
+                    android:id="@+id/BTN_BACK_CHI_TIET"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="16dp"
+                    android:src="@android:drawable/ic_menu_revert"
+                    app:tint="@color/white" />
+
+                <ImageView
+                    android:id="@+id/BTN_LUU_TRAM"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="16dp"
+                    android:src="@android:drawable/ic_menu_save"
+                    app:tint="@color/white" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:id="@+id/TXT_TEN_TRAM_CHI_TIET"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Trạm sạc số 1" android:textColor="@color/white" android:textSize="28sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Số x, Đường A, phường B, TP C" android:textColor="#A0A0A0" android:textSize="14sp" />
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4.3 ★★★★★" android:textColor="#FFC107" android:textSize="14sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="(107 reviews)" android:textColor="#808080" android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/TXT_TRANG_THAI_CHI_TIET"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@color/XANH_NEON" android:paddingHorizontal="12dp" android:paddingVertical="4dp" android:text="Có sẵn" android:textColor="@color/white" android:textSize="12sp" android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/TXT_KHOANG_CACH_CHI_TIET"
+                        android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="📍 1.3 Km" android:textColor="#D0D0D0" android:textSize="14sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="🚗 4 phút" android:textColor="#D0D0D0" android:textSize="14sp" />
+                    <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/BTN_CHI_DAN_CHI_TIET" android:layout_width="wrap_content" android:layout_height="40dp" android:text="Chỉ dẫn" android:backgroundTint="@color/XANH_NEON" app:cornerRadius="20dp" app:icon="@android:drawable/ic_menu_directions" app:iconSize="16dp" android:textSize="12sp"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal"
+                android:weightSum="3">
+                <TextView android:id="@+id/TAB_THONG_TIN" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="Thông tin chung" android:textColor="@color/XANH_NEON" android:textStyle="bold" />
+                <TextView android:id="@+id/TAB_CHUAN_SAC" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="Chuẩn sạc" android:textColor="#808080" />
+                <TextView android:id="@+id/TAB_DANH_GIA" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:gravity="center" android:text="Đánh giá" android:textColor="#808080" />
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#2A2D39" />
+
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="20dp" android:orientation="vertical">
+
+                <LinearLayout android:id="@+id/LAYOUT_THONG_TIN" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="visible">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giới thiệu" android:textColor="@color/white" android:textStyle="bold" android:textSize="16sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Trạm sạc xe điện được xây dựng nhằm mang đến giải pháp sạc nhanh, an toàn và tiện lợi cho người dùng xe điện. Hệ thống trạm được trang bị công nghệ sạc tiên tiến... Đọc thêm" android:textColor="#A0A0A0" android:lineSpacingExtra="4dp"/>
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="Địa chỉ" android:textColor="@color/white" android:textStyle="bold" android:textSize="16sp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="📍 Số x, Đường A, Quận B, TP C" android:textColor="#A0A0A0" />
+
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="Thời gian hoạt động" android:textColor="@color/white" android:textStyle="bold" android:textSize="16sp"/>
+                    <TextView android:layout_width="match_parent" android:layout_height="50dp" android:layout_marginTop="8dp" android:background="@drawable/bg_otp_box" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:text="24/7" android:textColor="@color/white"/>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/LAYOUT_CHUAN_SAC" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="@color/DEN_NEN"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/XANH_NEON"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="24 giờ" android:textColor="#A0A0A0" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Sẵn có (3/4) ●" android:textColor="@color/XANH_NEON" />
+                            </RelativeLayout>
+                            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="#2A2D39" />
+
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:weightSum="2">
+                                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Chuẩn sạc 1" android:textColor="#A0A0A0" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔌" android:textSize="24sp" android:layout_marginTop="4dp"/>
+                                </LinearLayout>
+                                <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Công suất" android:textColor="#A0A0A0" />
+                                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="100 Kw" android:textColor="@color/white" android:textStyle="bold" android:textSize="18sp" android:layout_marginTop="4dp"/>
+                                </LinearLayout>
+                            </LinearLayout>
+                            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="12dp" android:background="#2A2D39" />
+
+                            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Bảng giá điện" android:textColor="#A0A0A0" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Xem chi tiết" android:textColor="#A0A0A0" android:textSize="12sp" />
+                            </RelativeLayout>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="↑ 21.000đ/h   — 17.000đ/h   ↓ 13.000đ/h" android:textColor="#A0A0A0" android:textSize="13sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="@color/DEN_NEN"
+                        app:cardCornerRadius="12dp"
+                        app:strokeColor="@color/XANH_NEON"
+                        app:strokeWidth="1dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                            <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="24 giờ" android:textColor="#A0A0A0" />
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Sẵn có (2/4) ●" android:textColor="@color/XANH_NEON" />
+                            </RelativeLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/LAYOUT_DANH_GIA" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:weightSum="2" android:gravity="center_vertical">
+                        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="4.3" android:textColor="@color/white" android:textSize="36sp" android:textStyle="bold"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="★★★★★" android:textColor="#FFC107" android:textSize="18sp"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="(128 Đánh giá)" android:textColor="#A0A0A0" android:textSize="12sp"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:orientation="vertical">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="5 ──────────" android:textColor="@color/XANH_NEON" android:gravity="end"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="4 ───────" android:textColor="@color/XANH_NEON" android:gravity="end"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="3 ──" android:textColor="#A0A0A0" android:gravity="end"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="2 ─" android:textColor="#A0A0A0" android:gravity="end"/>
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="1 ─" android:textColor="#A0A0A0" android:gravity="end"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginVertical="16dp" android:background="#2A2D39" />
+
+                    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sắp xếp theo" android:textColor="#A0A0A0" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="Mới nhất ↑↓" android:textColor="@color/XANH_NEON" />
+                    </RelativeLayout>
+
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="vertical" android:background="@drawable/bg_otp_box" android:padding="12dp">
+                        <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                            <ImageView android:id="@+id/AVATAR_1" android:layout_width="40dp" android:layout_height="40dp" android:src="@drawable/logo_volt" />
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_toEndOf="@id/AVATAR_1" android:layout_marginStart="12dp" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Darren Kulikowski" android:textColor="@color/white" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="★★★★★ (5)" android:textColor="#FFC107" android:textSize="12sp"/>
+                            </LinearLayout>
+                            <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:orientation="vertical" android:gravity="end">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hôm nay" android:textColor="#A0A0A0" android:textSize="12sp"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="08:04 AM" android:textColor="#A0A0A0" android:textSize="12sp"/>
+                            </LinearLayout>
+                        </RelativeLayout>
+
+                        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Trạm được chiếu sáng và bảo mật tốt, rất quan trọng khi sạc xe vào ban đêm 🌙" android:textColor="#D0D0D0" />
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="❤️ Thích (12)" android:textColor="#A0A0A0" android:textSize="12sp" android:layout_marginEnd="16dp" android:clickable="true" android:focusable="true"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="💬 Bình luận (3)" android:textColor="#A0A0A0" android:textSize="12sp" android:layout_marginEnd="16dp" android:clickable="true" android:focusable="true"/>
+                            <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1"/>
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🔗 Chia sẻ" android:textColor="#A0A0A0" android:textSize="12sp" android:clickable="true" android:focusable="true"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>
