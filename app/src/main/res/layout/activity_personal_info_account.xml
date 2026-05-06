@@ -8,7 +8,7 @@
         <TextView style="@style/InfoLabel" android:text="Email"/><TextView android:id="@+id/tv_email_personal" style="@style/InfoValue" android:text="..."/>
         <TextView style="@style/InfoLabel" android:text="Số điện thoại"/><TextView android:id="@+id/tv_phone_personal" style="@style/InfoValue" android:text="..."/>
         <TextView style="@style/InfoLabel" android:text="Giới tính"/><TextView android:id="@+id/tv_gender_personal" style="@style/InfoValue" android:text="..."/>
-        <TextView style="@style/InfoLabel" android:text="Ngày sinh"/><TextView style="@style/InfoValue" android:text="Chưa cập nhật"/>
+
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="20dp"><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Hạng khách hàng\n●  Bạc" android:textColor="#FFFFFF" android:textSize="15sp"/><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Nhóm khách hàng\n●  VIP" android:textColor="#FFFFFF" android:textSize="15sp"/></LinearLayout>
     </LinearLayout>
 </ScrollView>

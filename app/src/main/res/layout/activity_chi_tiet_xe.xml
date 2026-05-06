@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#191B21"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/BTN_BACK_CHI_TIET"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Chi Tiết Xe"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="20dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Tên xe -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tên xe"
+                android:textColor="#A0A0A0"
+                android:textSize="14sp" />
+            <EditText
+                android:id="@+id/EDT_TEN_XE"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_otp_box"
+                android:paddingHorizontal="16dp"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <!-- Hãng xe -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Hãng xe"
+                android:textColor="#A0A0A0"
+                android:textSize="14sp" />
+            <EditText
+                android:id="@+id/EDT_HANG_XE"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_otp_box"
+                android:paddingHorizontal="16dp"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <!-- Năm sản xuất -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Năm sản xuất"
+                android:textColor="#A0A0A0"
+                android:textSize="14sp" />
+            <EditText
+                android:id="@+id/EDT_NAM_SX"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_otp_box"
+                android:inputType="number"
+                android:paddingHorizontal="16dp"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <!-- Loại xe -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Loại phương tiện"
+                android:textColor="#A0A0A0"
+                android:textSize="14sp" />
+            <Spinner
+                android:id="@+id/SPN_LOAI_XE"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_otp_box"
+                android:paddingHorizontal="16dp" />
+
+            <!-- Dung lượng pin -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Dung lượng pin (kWh)"
+                android:textColor="#A0A0A0"
+                android:textSize="14sp" />
+            <EditText
+                android:id="@+id/EDT_DUNG_LUONG_PIN"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_otp_box"
+                android:inputType="numberDecimal"
+                android:paddingHorizontal="16dp"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+            <!-- Chuẩn sạc -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Chuẩn sạc"
+                android:textColor="#A0A0A0"
+                android:textSize="14sp" />
+            <Spinner
+                android:id="@+id/SPN_CHUAN_SAC"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_otp_box"
+                android:paddingHorizontal="16dp" />
+
+            <ProgressBar
+                android:id="@+id/PROGRESS_BAR_CHI_TIET"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/BTN_LUU_CHI_TIET"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="16dp"
+        android:text="LƯU THAY ĐỔI"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        app:backgroundTint="#01B763"
+        app:cornerRadius="28dp" />
+</LinearLayout>
