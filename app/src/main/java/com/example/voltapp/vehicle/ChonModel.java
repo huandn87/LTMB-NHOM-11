@@ -49,10 +49,6 @@ public class ChonModel extends AppCompatActivity {
         }
 
         for (String modelName : models) {
-            View itemView = getLayoutInflater().inflate(R.layout.item_brand_row, null); // Dùng chung layout row nếu có
-            // Nếu không có item_brand_row, ta có thể tạo nhanh code UI hoặc dùng mẫu cũ
-            // Ở đây tôi sẽ tạo RelativeLayout bằng code để đảm bảo chạy được
-            
             RelativeLayout row = new RelativeLayout(this);
             row.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.match_parent, 
