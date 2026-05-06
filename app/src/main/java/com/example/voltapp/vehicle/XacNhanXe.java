@@ -28,9 +28,9 @@ public class XacNhanXe extends AppCompatActivity {
         ImageView btnBack = findViewById(R.id.BTN_BACK_XAC_NHAN);
         btnBack.setOnClickListener(v -> finish());
 
-        // Nhận dữ liệu truyền từ trang Chọn Model
-        String tenHang = getIntent().getStringExtra("TEN_HANG");
-        String tenModel = getIntent().getStringExtra("TEN_MODEL");
+        // Nhận dữ liệu truyền từ trang Chọn Model - Đánh dấu final để dùng trong lambda setOnClickListener
+        final String tenHang = getIntent().getStringExtra("TEN_HANG");
+        final String tenModel = getIntent().getStringExtra("TEN_MODEL");
 
         if (tenHang != null) {
             ((TextView) findViewById(R.id.TXT_HANG_XE_XAC_NHAN)).setText(tenHang);
@@ -44,9 +44,16 @@ public class XacNhanXe extends AppCompatActivity {
         });
     }
 
-    private void ensureCustomerExistsAndSave(String brand, String model) {
+    private void ensureCustomerExistsAndSave(final String brand, final String model) {
+        Intent intent = getIntent();
+        final int modelYear = intent.getIntExtra("MODEL_YEAR", 2023);
+        String typeRaw = intent.getStringExtra("TYPE");
+        final String type = (typeRaw == null) ? "car" : typeRaw;
+        final double battery = intent.getDoubleExtra("BATTERY_CAPACITY", 50.0);
+        final int chargeStandardId = intent.getIntExtra("CHARGE_STANDARD_ID", 1);
+
         SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
-        int accountId = prefs.getInt("account_id", 0);
+        final int accountId = prefs.getInt("account_id", 0);
 
         // Tạo bản ghi khachhang trước để thỏa mãn Foreign Key
         JSONObject customerJson = new JSONObject();
@@ -61,37 +68,34 @@ public class XacNhanXe extends AppCompatActivity {
             @Override
             public void onSuccess(String json) {
                 // Đã tạo thành công hoặc đã tồn tại
-                saveVehicleToSupabase(brand, model);
+                saveVehicleToSupabase(brand, model, modelYear, type, battery, chargeStandardId);
             }
 
             @Override
             public void onError(String message) {
-                // Nếu lỗi do đã tồn tại (409) thì vẫn tiếp tục lưu xe
-                if (message.contains("409")) {
-                    saveVehicleToSupabase(brand, model);
-                } else {
-                    saveVehicleToSupabase(brand, model); // Thử lưu xe luôn, có thể DB đã có sẵn
-                }
+                // Thử lưu xe luôn, có thể DB đã có sẵn
+                saveVehicleToSupabase(brand, model, modelYear, type, battery, chargeStandardId);
             }
         });
     }
 
-    private void saveVehicleToSupabase(String brand, String model) {
-        ProgressDialog pd = new ProgressDialog(this);
+    private void saveVehicleToSupabase(final String brand, final String model, final int modelYear, final String type, final double battery, final int chargeStandardId) {
+        final ProgressDialog pd = new ProgressDialog(this);
         pd.setMessage("Đang lưu thông tin xe...");
         pd.show();
 
         SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
-        int accountId = prefs.getInt("account_id", 0);
+        final int accountId = prefs.getInt("account_id", 0);
 
         try {
             JSONObject json = new JSONObject();
             json.put("customer_id", accountId);
             json.put("manufacturer", brand);
             json.put("name", model);
-            json.put("charge_standard_id", 1); // Giá trị mặc định do UI chưa có
-            json.put("type", "car"); // Giá trị mặc định
-            json.put("battery_capacity", 50.0); // Giá trị mặc định
+            json.put("model_year", modelYear);
+            json.put("charge_standard_id", chargeStandardId);
+            json.put("type", type);
+            json.put("battery_capacity", battery);
 
             api.post("phuongtien", json.toString(), new SupabaseService.ApiCallback() {
                 @Override
@@ -106,7 +110,7 @@ public class XacNhanXe extends AppCompatActivity {
                 }
 
                 @Override
-                public void onError(String message) {
+                public void onError(final String message) {
                     runOnUiThread(() -> {
                         pd.dismiss();
                         android.util.Log.e("XacNhanXe", "Lỗi lưu xe: " + message);

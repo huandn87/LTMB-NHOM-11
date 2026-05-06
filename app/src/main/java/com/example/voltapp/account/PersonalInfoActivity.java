@@ -29,7 +29,7 @@ import okhttp3.Response;
 public class PersonalInfoActivity extends AppCompatActivity {
 
     private static final String TAG = "VoltApp_PersonalInfo";
-    private static final String SUPABASE_URL = "https://xyntcrsfhacvqsuyvbkd.supabase.co/rest/v1/taikhoan";
+    private static final String SUPABASE_URL = "https://xyntcrsfhacvqsuyvbkd.supabase.co/rest/v1/khachhang";
     private static final String SUPABASE_ANON_KEY = "sb_publishable_Ga562F_Z8kOEFmvkpbPYAw_gYus54p7";
 
     private TextView tvName, tvEmail, tvPhone, tvGender;
@@ -79,7 +79,12 @@ public class PersonalInfoActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         
         final String sanitizedPhone = userPhone.trim().replace(" ", "");
-        String finalUrl = SUPABASE_URL + "?username=eq." + sanitizedPhone;
+        String encodedPhone = sanitizedPhone;
+        try {
+            encodedPhone = java.net.URLEncoder.encode(sanitizedPhone, "UTF-8");
+        } catch (Exception e) {}
+        
+        String finalUrl = SUPABASE_URL + "?phone=eq." + encodedPhone;
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
@@ -109,7 +114,7 @@ public class PersonalInfoActivity extends AppCompatActivity {
                         if (jsonArray.length() > 0) {
                             JSONObject userObj = jsonArray.getJSONObject(0);
                             
-                            currentName = userObj.optString("full_name", "Chưa cập nhật");
+                            currentName = userObj.optString("name", "Chưa cập nhật");
                             currentEmail = userObj.optString("email", "Chưa cập nhật");
                             currentGender = userObj.optString("gender", "Khác");
                             

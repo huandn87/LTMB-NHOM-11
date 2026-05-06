@@ -35,7 +35,7 @@ import okhttp3.Response;
 public class HoanThienHoSo extends AppCompatActivity {
 
     private static final String TAG = "VoltApp_Profile";
-    private static final String SUPABASE_URL = "https://xyntcrsfhacvqsuyvbkd.supabase.co/rest/v1/taikhoan";
+    private static final String SUPABASE_URL = "https://xyntcrsfhacvqsuyvbkd.supabase.co/rest/v1/khachhang";
     private static final String SUPABASE_ANON_KEY = "sb_publishable_Ga562F_Z8kOEFmvkpbPYAw_gYus54p7";
 
     private boolean isEditMode = false;
@@ -115,13 +115,18 @@ public class HoanThienHoSo extends AppCompatActivity {
 
         JSONObject json = new JSONObject();
         try {
-            json.put("full_name", name);
+            json.put("name", name); // Cột trong bảng khachhang là 'name'
             json.put("email", email);
             json.put("gender", gender);
         } catch (Exception e) { e.printStackTrace(); }
 
         RequestBody body = RequestBody.create(json.toString(), JSON);
-        String finalUrl = SUPABASE_URL + "?username=eq." + phone;
+        String encodedPhone = phone;
+        try {
+            encodedPhone = java.net.URLEncoder.encode(phone, "UTF-8");
+        } catch (Exception e) {}
+        
+        String finalUrl = SUPABASE_URL + "?phone=eq." + encodedPhone;
 
         Request request = new Request.Builder()
                 .url(finalUrl)
@@ -155,13 +160,21 @@ public class HoanThienHoSo extends AppCompatActivity {
                         if (isEditMode) {
                             finish(); // Trở về PersonalInfoActivity
                         } else {
-                            startActivity(new Intent(HoanThienHoSo.this, com.example.voltapp.account.MyCarsActivity.class));
+                            // Chuyển qua màn hình Chọn Xe
+                            startActivity(new Intent(HoanThienHoSo.this, com.example.voltapp.vehicle.ChonXe.class));
                             finish();
                         }
                     });
                 } else {
                     Log.e(TAG, "Lỗi Supabase " + response.code() + ": " + responseBody);
-                    runOnUiThread(() -> Toast.makeText(HoanThienHoSo.this, "Lỗi server: " + response.code(), Toast.LENGTH_SHORT).show());
+                    String errorMsg = responseBody;
+                    try {
+                        JSONObject err = new JSONObject(responseBody);
+                        errorMsg = err.optString("message", "") + " - " + err.optString("hint", "");
+                    } catch (Exception e) {}
+                    
+                    final String finalError = errorMsg;
+                    runOnUiThread(() -> Toast.makeText(HoanThienHoSo.this, "Lỗi: " + finalError, Toast.LENGTH_LONG).show());
                 }
             }
         });

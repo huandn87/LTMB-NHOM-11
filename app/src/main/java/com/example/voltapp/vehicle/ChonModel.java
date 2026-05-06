@@ -5,11 +5,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.voltapp.R;
+import com.example.voltapp.account.api.SupabaseService;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class ChonModel extends AppCompatActivity {
     @Override
@@ -29,68 +33,116 @@ public class ChonModel extends AppCompatActivity {
         ImageView btnBack = findViewById(R.id.BTN_BACK_MODEL);
         btnBack.setOnClickListener(v -> finish());
 
-        // Lắng nghe sự kiện bấm vào từng Model xe
         LinearLayout layoutDanhSach = findViewById(R.id.LAYOUT_DANH_SACH_MODEL);
-        layoutDanhSach.removeAllViews(); // Xoá các model cứng trong XML
+        ProgressBar progressBar = findViewById(R.id.PROGRESS_BAR_MODEL);
 
-        String[] models;
-        if (tenHangXe.equalsIgnoreCase("VinFast")) {
-            models = new String[]{"VF 5 Plus", "VF e34", "VF 6", "VF 7", "VF 8", "VF 9"};
-        } else if (tenHangXe.equalsIgnoreCase("Tesla")) {
-            models = new String[]{"Model 3", "Model S", "Model X", "Model Y", "Cybertruck"};
-        } else if (tenHangXe.equalsIgnoreCase("Hyundai")) {
-            models = new String[]{"Ioniq 5", "Ioniq 6", "Kona Electric"};
-        } else if (tenHangXe.equalsIgnoreCase("Kia")) {
-            models = new String[]{"EV6", "EV9"};
-        } else if (tenHangXe.equalsIgnoreCase("Audi")) {
-            models = new String[]{"e-tron GT", "Q4 e-tron", "Q8 e-tron"};
-        } else {
-            models = new String[]{"Standard Model", "Long Range", "Performance"};
+        if (tenHangXe == null || tenHangXe.isEmpty()) {
+            Toast.makeText(this, "Lỗi: Không tìm thấy hãng xe", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        for (String modelName : models) {
-            RelativeLayout row = new RelativeLayout(this);
-            row.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, 
-                    (int) (60 * getResources().getDisplayMetrics().density)));
-            row.setPadding((int) (16 * getResources().getDisplayMetrics().density), 0, 0, 0);
+        // Tải danh sách các Model của hãng này từ Supabase
+        progressBar.setVisibility(View.VISIBLE);
+        SupabaseService api = new SupabaseService();
+        String encodedHangXe = tenHangXe;
+        try {
+            encodedHangXe = java.net.URLEncoder.encode(tenHangXe, "UTF-8");
+        } catch (Exception e) {}
 
-            TextView txtName = new TextView(this);
-            txtName.setText(modelName);
-            txtName.setTextColor(android.graphics.Color.WHITE);
-            txtName.setTextSize(16);
-            RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT, 
-                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-            lp.addRule(RelativeLayout.CENTER_VERTICAL);
-            row.addView(txtName, lp);
+        String query = "phuongtien?manufacturer=eq." + encodedHangXe;
+        api.get(query, new SupabaseService.ApiCallback() {
+            @Override
+            public void onSuccess(String json) {
+                runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    try {
+                        JSONArray array = new JSONArray(json);
+                        layoutDanhSach.removeAllViews();
 
-            TextView txtArrow = new TextView(this);
-            txtArrow.setText(">");
-            txtArrow.setTextColor(android.graphics.Color.parseColor("#808080"));
-            txtArrow.setTextSize(20);
-            RelativeLayout.LayoutParams lpArrow = new RelativeLayout.LayoutParams(
-                    RelativeLayout.LayoutParams.WRAP_CONTENT, 
-                    RelativeLayout.LayoutParams.WRAP_CONTENT);
-            lpArrow.addRule(RelativeLayout.ALIGN_PARENT_END);
-            lpArrow.addRule(RelativeLayout.CENTER_VERTICAL);
-            lpArrow.setMarginEnd((int) (16 * getResources().getDisplayMetrics().density));
-            row.addView(txtArrow, lpArrow);
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject obj = array.getJSONObject(i);
+                            String tenModel = obj.optString("name", "");
+                            int modelYear = obj.optInt("model_year", 2023);
+                            String type = obj.optString("type", "car");
+                            double battery = obj.optDouble("battery_capacity", 50.0);
+                            int chargeStandardId = obj.optInt("charge_standard_id", 1);
 
-            View divider = new View(this);
-            divider.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, 1));
-            divider.setBackgroundColor(android.graphics.Color.parseColor("#2A2D39"));
+                            if (!tenModel.isEmpty()) {
+                                addModelRow(layoutDanhSach, tenHangXe, tenModel, modelYear, type, battery, chargeStandardId);
 
-            row.setOnClickListener(v -> {
-                Intent intent = new Intent(ChonModel.this, XacNhanXe.class);
-                intent.putExtra("TEN_HANG", getIntent().getStringExtra("TEN_HANG_XE_DA_CHON"));
-                intent.putExtra("TEN_MODEL", modelName);
-                startActivity(intent);
-            });
+                                if (i < array.length() - 1) {
+                                    View divider = new View(ChonModel.this);
+                                    divider.setLayoutParams(new LinearLayout.LayoutParams(
+                                            LinearLayout.LayoutParams.MATCH_PARENT, 1));
+                                    divider.setBackgroundColor(android.graphics.Color.parseColor("#2A2D39"));
+                                    layoutDanhSach.addView(divider);
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(ChonModel.this, "Lỗi phân tích dữ liệu", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
 
-            layoutDanhSach.addView(row);
-            layoutDanhSach.addView(divider);
-        }
+            @Override
+            public void onError(String message) {
+                runOnUiThread(() -> {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(ChonModel.this, "Lỗi tải Model: " + message, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
+    private void addModelRow(LinearLayout layoutDanhSach, String tenHangXe, String tenModel, 
+                             int modelYear, String type, double battery, int chargeStandardId) {
+        RelativeLayout row = new RelativeLayout(this);
+        row.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, dpToPx(60)));
+        row.setClickable(true);
+        row.setFocusable(true);
+
+        TextView txtTenModel = new TextView(this);
+        txtTenModel.setText(tenModel);
+        txtTenModel.setTextColor(android.graphics.Color.WHITE);
+        txtTenModel.setTextSize(16);
+        RelativeLayout.LayoutParams paramName = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramName.addRule(RelativeLayout.CENTER_VERTICAL);
+        txtTenModel.setLayoutParams(paramName);
+
+        TextView txtArrow = new TextView(this);
+        txtArrow.setText(">");
+        txtArrow.setTextColor(android.graphics.Color.parseColor("#808080"));
+        txtArrow.setTextSize(20);
+        RelativeLayout.LayoutParams paramArrow = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        paramArrow.addRule(RelativeLayout.ALIGN_PARENT_END);
+        paramArrow.addRule(RelativeLayout.CENTER_VERTICAL);
+        txtArrow.setLayoutParams(paramArrow);
+
+        row.addView(txtTenModel);
+        row.addView(txtArrow);
+
+        row.setOnClickListener(v -> {
+            Toast.makeText(ChonModel.this, "Đang chọn: " + tenHangXe + " - " + tenModel, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(ChonModel.this, XacNhanXe.class);
+            intent.putExtra("TEN_HANG", tenHangXe);
+            intent.putExtra("TEN_MODEL", tenModel);
+            intent.putExtra("MODEL_YEAR", modelYear);
+            intent.putExtra("TYPE", type);
+            intent.putExtra("BATTERY_CAPACITY", battery);
+            intent.putExtra("CHARGE_STANDARD_ID", chargeStandardId);
+            startActivity(intent);
+        });
+
+        layoutDanhSach.addView(row);
+    }
+
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round((float) dp * density);
     }
 }
