@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="5dp">
+
+    <!-- Xe của tôi -->
+    <RelativeLayout
+        android:id="@+id/row_cars"
+        style="@style/AccountRowV2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🚘   Xe của tôi"
+            style="@style/AccountTextV2" />
+        <TextView
+            android:text="›"
+            style="@style/AccountArrowV2" />
+    </RelativeLayout>
+
+    <!-- Phương thức thanh toán -->
+    <RelativeLayout
+        android:id="@+id/row_payment"
+        style="@style/AccountRowV2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="▤   Phương thức thanh toán"
+            style="@style/AccountTextV2" />
+        <TextView
+            android:text="›"
+            style="@style/AccountArrowV2" />
+    </RelativeLayout>
+
+    <View style="@style/AccountDividerV2"/>
+
+    <!-- Thông tin cá nhân -->
+    <RelativeLayout
+        android:id="@+id/row_profile"
+        style="@style/AccountRowV2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="♙   Thông tin cá nhân"
+            style="@style/AccountTextV2" />
+        <TextView
+            android:text="›"
+            style="@style/AccountArrowV2" />
+    </RelativeLayout>
+
+    <!-- Bảo mật -->
+    <RelativeLayout
+        android:id="@+id/row_security"
+        style="@style/AccountRowV2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="♢   Bảo mật"
+            style="@style/AccountTextV2" />
+        <TextView
+            android:text="›"
+            style="@style/AccountArrowV2" />
+    </RelativeLayout>
+
+    <!-- Ngôn ngữ -->
+    <RelativeLayout
+        android:id="@+id/row_language"
+        style="@style/AccountRowV2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="▤   Ngôn ngữ"
+            style="@style/AccountTextV2" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tiếng Việt"
+                android:textColor="#01B763"
+                android:textSize="14sp"
+                android:layout_marginEnd="8dp" />
+            <TextView
+                android:text="›"
+                style="@style/AccountArrowV2"
+                android:layout_alignParentEnd="false" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- Chế độ tối -->
+    <RelativeLayout
+        style="@style/AccountRowV2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="◉   Chế độ tối"
+            style="@style/AccountTextV2" />
+        <Switch
+            android:id="@+id/switch_dark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:checked="true" />
+    </RelativeLayout>
+
+    <View style="@style/AccountDividerV2"/>
+
+    <!-- Trung tâm trợ giúp -->
+    <RelativeLayout
+        style="@style/AccountRowV2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="▧   Trung tâm trợ giúp"
+            style="@style/AccountTextV2" />
+        <TextView
+            android:text="›"
+            style="@style/AccountArrowV2" />
+    </RelativeLayout>
+
+    <!-- Điều khoản -->
+    <RelativeLayout
+        style="@style/AccountRowV2">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="▣   Điều khoản"
+            style="@style/AccountTextV2" />
+        <TextView
+            android:text="›"
+            style="@style/AccountArrowV2" />
+    </RelativeLayout>
+
+    <!-- Đăng xuất -->
+    <RelativeLayout
+        android:id="@+id/row_logout"
+        style="@style/AccountRowV2"
+        android:layout_marginTop="10dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="↪   Đăng xuất"
+            android:textColor="#F75555"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+</LinearLayout>
