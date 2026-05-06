@@ -14,6 +14,7 @@ import com.example.voltapp.R;
 import com.example.voltapp.account.api.SupabaseService;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.util.HashSet;
 
 public class ChonModel extends AppCompatActivity {
     @Override
@@ -50,7 +51,7 @@ public class ChonModel extends AppCompatActivity {
             encodedHangXe = java.net.URLEncoder.encode(tenHangXe, "UTF-8");
         } catch (Exception e) {}
 
-        String query = "phuongtien?manufacturer=eq." + encodedHangXe + "&customer_id=is.null";
+        String query = "phuongtien?manufacturer=eq." + encodedHangXe;
         api.get(query, new SupabaseService.ApiCallback() {
             @Override
             public void onSuccess(String json) {
@@ -60,25 +61,54 @@ public class ChonModel extends AppCompatActivity {
                         JSONArray array = new JSONArray(json);
                         layoutDanhSach.removeAllViews();
 
+                        HashSet<String> addedModels = new HashSet<>();
+
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject obj = array.getJSONObject(i);
-                            String tenModel = obj.optString("name", "");
+                            String tenModel = obj.optString("name", "").trim();
                             int modelYear = obj.optInt("model_year", 2023);
                             String type = obj.optString("type", "car");
                             double battery = obj.optDouble("battery_capacity", 50.0);
                             int chargeStandardId = obj.optInt("charge_standard_id", 1);
 
-                            if (!tenModel.isEmpty()) {
+                            if (!tenModel.isEmpty() && !addedModels.contains(tenModel)) {
+                                addedModels.add(tenModel);
                                 addModelRow(layoutDanhSach, tenHangXe, tenModel, modelYear, type, battery, chargeStandardId);
-
-                                if (i < array.length() - 1) {
-                                    View divider = new View(ChonModel.this);
-                                    divider.setLayoutParams(new LinearLayout.LayoutParams(
-                                            LinearLayout.LayoutParams.MATCH_PARENT, 1));
-                                    divider.setBackgroundColor(android.graphics.Color.parseColor("#2A2D39"));
-                                    layoutDanhSach.addView(divider);
-                                }
                             }
+                        }
+
+                        // Nếu không lấy được model nào từ mảng, dùng fallback data
+                        if (addedModels.isEmpty()) {
+                            String[] models;
+                            if ("VinFast".equalsIgnoreCase(tenHangXe)) {
+                                models = new String[]{"VF 5", "VF 6", "VF 7", "VF 8", "VF 9", "VF e34"};
+                            } else if ("Tesla".equalsIgnoreCase(tenHangXe)) {
+                                models = new String[]{"Model 3", "Model Y", "Model S", "Model X"};
+                            } else if ("Porsche".equalsIgnoreCase(tenHangXe)) {
+                                models = new String[]{"Taycan"};
+                            } else if ("Audi".equalsIgnoreCase(tenHangXe)) {
+                                models = new String[]{"e-tron GT", "Q4 e-tron", "Q8 e-tron"};
+                            } else if ("Hyundai".equalsIgnoreCase(tenHangXe)) {
+                                models = new String[]{"Ioniq 5", "Ioniq 6"};
+                            } else if ("Kia".equalsIgnoreCase(tenHangXe)) {
+                                models = new String[]{"EV6", "EV9"};
+                            } else {
+                                models = new String[]{"Mẫu xe tiêu chuẩn"};
+                            }
+                            
+                            for (int i = 0; i < models.length; i++) {
+                                addModelRow(layoutDanhSach, tenHangXe, models[i], 2023, "car", 60.0, 1);
+                            }
+                        }
+
+                        // Vẽ đường gạch ngang (divider) cho các dòng
+                        int childCount = layoutDanhSach.getChildCount();
+                        for (int i = 0; i < childCount - 1; i++) {
+                            View divider = new View(ChonModel.this);
+                            divider.setLayoutParams(new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT, 1));
+                            divider.setBackgroundColor(android.graphics.Color.parseColor("#2A2D39"));
+                            layoutDanhSach.addView(divider, i * 2 + 1);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -136,6 +166,7 @@ public class ChonModel extends AppCompatActivity {
             intent.putExtra("TYPE", type);
             intent.putExtra("BATTERY_CAPACITY", battery);
             intent.putExtra("CHARGE_STANDARD_ID", chargeStandardId);
+            intent.putExtra("IS_FROM_REGISTER", getIntent().getBooleanExtra("IS_FROM_REGISTER", false));
             startActivity(intent);
         });
 

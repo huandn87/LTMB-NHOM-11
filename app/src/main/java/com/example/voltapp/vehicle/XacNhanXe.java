@@ -136,6 +136,39 @@ public class XacNhanXe extends AppCompatActivity {
 
             @Override
             public void onError(String message) {
+                if (message != null && message.contains("409")) {
+                    String phone = prefs.getString("user_phone", "");
+                    if (!phone.isEmpty()) {
+                        String queryPhone = phone;
+                        try { queryPhone = java.net.URLEncoder.encode(phone, "UTF-8"); } catch (Exception ignored) {}
+                        
+                        api.get("khachhang?phone=eq." + queryPhone, new SupabaseService.ApiCallback() {
+                            @Override
+                            public void onSuccess(String json2) {
+                                try {
+                                    JSONArray arr = new JSONArray(json2);
+                                    if (arr.length() > 0) {
+                                        int existingCustomerId = arr.getJSONObject(0).getInt("customer_id");
+                                        runOnUiThread(() -> saveVehicleToSupabase(brand, model, modelYear, type, battery, chargeStandardId, existingCustomerId, pd));
+                                    } else {
+                                        runOnUiThread(() -> {
+                                            pd.dismiss();
+                                            Toast.makeText(XacNhanXe.this, "Lỗi: Không tìm thấy hồ sơ cũ (409)", Toast.LENGTH_SHORT).show();
+                                        });
+                                    }
+                                } catch (Exception e) {
+                                    runOnUiThread(() -> { pd.dismiss(); Toast.makeText(XacNhanXe.this, "Lỗi phân tích: " + e.getMessage(), Toast.LENGTH_SHORT).show(); });
+                                }
+                            }
+                            @Override
+                            public void onError(String msg) {
+                                runOnUiThread(() -> { pd.dismiss(); Toast.makeText(XacNhanXe.this, "Lỗi tải hồ sơ cũ: " + msg, Toast.LENGTH_SHORT).show(); });
+                            }
+                        });
+                        return;
+                    }
+                }
+
                 runOnUiThread(() -> {
                     pd.dismiss();
                     android.util.Log.e("XacNhanXe", "Lỗi tạo hồ sơ khách hàng: " + message);
@@ -226,8 +259,17 @@ public class XacNhanXe extends AppCompatActivity {
                     runOnUiThread(() -> {
                         if (pd != null && pd.isShowing()) pd.dismiss();
                         Toast.makeText(XacNhanXe.this, "Thêm xe thành công!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(XacNhanXe.this, MyCarsActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        
+                        boolean isFromRegister = getIntent().getBooleanExtra("IS_FROM_REGISTER", false);
+                        Intent intent;
+                        if (isFromRegister) {
+                            intent = new Intent(XacNhanXe.this, com.example.voltapp.home.ManHinhChinh.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        } else {
+                            intent = new Intent(XacNhanXe.this, com.example.voltapp.account.TaiKhoanActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        }
+                        
                         startActivity(intent);
                         finish();
                     });

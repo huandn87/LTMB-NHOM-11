@@ -157,13 +157,7 @@ public class HoanThienHoSo extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     runOnUiThread(() -> {
                         Toast.makeText(HoanThienHoSo.this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
-                        if (isEditMode) {
-                            finish(); // Trở về PersonalInfoActivity
-                        } else {
-                            // Chuyển qua màn hình Chọn Xe
-                            startActivity(new Intent(HoanThienHoSo.this, com.example.voltapp.vehicle.ChonXe.class));
-                            finish();
-                        }
+                        finish(); // Trở về màn hình trước đó
                     });
                 } else {
                     Log.e(TAG, "Lỗi Supabase " + response.code() + ": " + responseBody);

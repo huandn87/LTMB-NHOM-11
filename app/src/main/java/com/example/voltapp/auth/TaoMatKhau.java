@@ -210,7 +210,9 @@ public class TaoMatKhau extends AppCompatActivity {
 
                     runOnUiThread(() -> {
                         Toast.makeText(TaoMatKhau.this, "Tạo tài khoản thành công! 🎉", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(TaoMatKhau.this, ChonHang.class));
+                        Intent intent = new Intent(TaoMatKhau.this, com.example.voltapp.vehicle.ChonHang.class);
+                        intent.putExtra("IS_FROM_REGISTER", true);
+                        startActivity(intent);
                         finish();
                     });
                 } else {

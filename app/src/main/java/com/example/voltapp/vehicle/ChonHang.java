@@ -45,7 +45,7 @@ public class ChonHang extends AppCompatActivity {
         // ==========================================
         progressBar.setVisibility(View.VISIBLE);
         SupabaseService api = new SupabaseService();
-        api.get("phuongtien?customer_id=is.null", new SupabaseService.ApiCallback() {
+        api.get("phuongtien", new SupabaseService.ApiCallback() {
             @Override
             public void onSuccess(String json) {
                 runOnUiThread(() -> {
@@ -133,6 +133,7 @@ public class ChonHang extends AppCompatActivity {
             Toast.makeText(ChonHang.this, "Đang chọn hãng: " + tenHang, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(ChonHang.this, ChonModel.class);
             intent.putExtra("TEN_HANG_XE_DA_CHON", tenHang);
+            intent.putExtra("IS_FROM_REGISTER", getIntent().getBooleanExtra("IS_FROM_REGISTER", false));
             startActivity(intent);
         });
 

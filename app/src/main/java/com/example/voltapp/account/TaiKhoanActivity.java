@@ -68,7 +68,7 @@ public class TaiKhoanActivity extends AppCompatActivity {
 
         // 3. Thông tin cá nhân
         View rowProfile = findViewById(R.id.row_profile);
-        if (rowProfile != null) rowProfile.setOnClickListener(v -> startActivity(new Intent(this, HoanThienHoSo.class)));
+        if (rowProfile != null) rowProfile.setOnClickListener(v -> startActivity(new Intent(this, PersonalInfoActivity.class)));
 
         // 4. Bảo mật
         View rowSecurity = findViewById(R.id.row_security);
