@@ -76,7 +76,7 @@ public class XacThucOtp extends AppCompatActivity {
      */
     private void xuLySauKhiNhapOtp(String otpCode) {
         // Kiểm tra OTP (nếu cần nghiêm ngặt hơn có thể dùng generatedOtp)
-        if (otpCode.equals(generatedOtp) || otpCode.equals("1234")) {
+        if (otpCode.equals(generatedOtp)) {
             Toast.makeText(this, "Xác thực OTP thành công ✅", Toast.LENGTH_SHORT).show();
 
             if ("register".equals(mode)) {
