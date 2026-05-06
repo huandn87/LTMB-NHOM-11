@@ -101,6 +101,8 @@
         <activity android:name=".account.PersonalInfoActivity" android:exported="false" />
         <activity android:name=".account.SecurityActivity" android:exported="false" />
         <activity android:name=".account.LanguageActivity" android:exported="false" />
+        <activity android:name=".account.HelpCenterActivity" android:exported="false" />
+        <activity android:name=".account.TermsActivity" android:exported="false" />
 
         <!-- Activities từ Dinhvijxe -->
         <activity android:name=".map.DetailActivity" android:exported="false" />

@@ -40,6 +40,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,14 +53,23 @@ public class ManHinhChinh extends AppCompatActivity implements OnMapReadyCallbac
     private LinearLayout panelThongTinTram, containerListTram;
     private ShimmerFrameLayout shimmerDanhSach;
     private TextView txtTenTram, txtDiaChi, txtTrangThai, txtKhoangCach;
+    private TextView txtRatingAvg, txtReviewCount;
     
     private Station selectedStation = null;
     private String loggedUsername = "Khách";
+    private List<Station> allStations = new ArrayList<>();
+    private List<Marker> currentMarkers = new ArrayList<>();
+    
+    private com.google.android.gms.location.FusedLocationProviderClient fusedLocationClient;
+    private android.location.Location userLocation = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_man_hinh_chinh);
+
+        fusedLocationClient = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(this);
+        checkLocationPermission();
 
         // Lấy thông tin username
         SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
@@ -67,6 +79,7 @@ public class ManHinhChinh extends AppCompatActivity implements OnMapReadyCallbac
         if (mapFragment != null) mapFragment.getMapAsync(this);
 
         FloatingActionButton fabToggle = findViewById(R.id.FAB_TOGGLE_VIEW);
+        FloatingActionButton fabLocation = findViewById(R.id.FAB_LOCATION);
         ScrollView scrollViewDanhSach = findViewById(R.id.LAYOUT_DANH_SACH_TRAM);
         panelThongTinTram = findViewById(R.id.PANEL_THONG_TIN_TRAM);
         containerListTram = findViewById(R.id.CONTAINER_LIST_TRAM);
@@ -76,6 +89,20 @@ public class ManHinhChinh extends AppCompatActivity implements OnMapReadyCallbac
         txtDiaChi = findViewById(R.id.TXT_DIA_CHI_MAP);
         txtTrangThai = findViewById(R.id.TXT_TRANG_THAI_MAP);
         txtKhoangCach = findViewById(R.id.TXT_KHOANG_CACH_MAP);
+        txtRatingAvg = findViewById(R.id.TXT_RATING_AVG_MAP);
+        txtReviewCount = findViewById(R.id.TXT_REVIEW_COUNT_MAP);
+
+        // Thiết lập Tìm kiếm
+        android.widget.EditText edtSearch = findViewById(R.id.EDT_SEARCH_MAP);
+        if (edtSearch != null) {
+            edtSearch.addTextChangedListener(new android.text.TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    filterStations(s.toString());
+                }
+                @Override public void afterTextChanged(android.text.Editable s) {}
+            });
+        }
 
         setupBottomNav();
 
@@ -103,14 +130,134 @@ public class ManHinhChinh extends AppCompatActivity implements OnMapReadyCallbac
                 panelThongTinTram.setVisibility(View.GONE);
                 fabToggle.setImageResource(android.R.drawable.ic_menu_mapmode);
                 isListView = true;
+                // Khi mở danh sách, đảm bảo nó đã được sắp xếp
+                if (userLocation != null) sortStationsByDistance();
             }
         });
+
+        if (fabLocation != null) {
+            fabLocation.setOnClickListener(v -> zoomToNearestStation());
+        }
 
         MaterialButton btnXemTram = findViewById(R.id.BTN_XEM_TRAM);
         if (btnXemTram != null) {
             btnXemTram.setOnClickListener(v -> {
                 if (selectedStation != null) chuyenSangChiTiet(selectedStation);
             });
+        }
+    }
+
+    private void checkLocationPermission() {
+        if (androidx.core.app.ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            androidx.core.app.ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1001);
+        } else {
+            updateUserLocation();
+        }
+    }
+
+    private void updateUserLocation() {
+        try {
+            fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
+                if (location != null) {
+                    userLocation = location;
+                    if (!allStations.isEmpty()) sortStationsByDistance();
+                }
+            });
+        } catch (SecurityException e) { e.printStackTrace(); }
+    }
+
+    private void sortStationsByDistance() {
+        if (userLocation == null || allStations.isEmpty()) return;
+        
+        for (Station s : allStations) {
+            float[] results = new float[1];
+            android.location.Location.distanceBetween(userLocation.getLatitude(), userLocation.getLongitude(), s.latitude, s.longitude, results);
+            s.distanceValue = results[0]; // Cần thêm field này vào Station.java
+        }
+
+        java.util.Collections.sort(allStations, (s1, s2) -> Float.compare(s1.distanceValue, s2.distanceValue));
+        hienThiDanhSachTram(allStations);
+    }
+
+    private void zoomToNearestStation() {
+        if (allStations.isEmpty() || mMap == null) return;
+        updateUserLocation();
+        if (userLocation != null) sortStationsByDistance();
+        
+        Station nearest = allStations.get(0);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(nearest.latitude, nearest.longitude), 16));
+        selectedStation = nearest;
+        hienThiPanelThongTin(nearest);
+    }
+
+    private void filterStations(String query) {
+        if (query == null || allStations == null) return;
+        String q = query.toLowerCase().trim();
+        
+        List<Station> filteredList = new ArrayList<>();
+        
+        // Lọc Marker trên bản đồ bằng cách ẩn/hiện thay vì xóa
+        for (Marker marker : currentMarkers) {
+            Station s = (Station) marker.getTag();
+            if (s != null) {
+                boolean matches = q.isEmpty() || 
+                                 s.getName().toLowerCase().contains(q) || 
+                                 s.getAddress().toLowerCase().contains(q);
+                marker.setVisible(matches);
+                if (matches) filteredList.add(s);
+            }
+        }
+        
+        // Cập nhật danh sách hiển thị bên dưới
+        hienThiDanhSachTram(filteredList);
+    }
+
+    private void khoiTaoMarkerMap(List<Station> stations) {
+        if (mMap == null || stations == null) return;
+        
+        // Xóa các marker cũ nếu có
+        for (Marker m : currentMarkers) m.remove();
+        currentMarkers.clear();
+
+        for (Station s : stations) {
+            LatLng pos = new LatLng(s.latitude, s.longitude);
+            int markerIcon = s.isAvailable() ? R.drawable.ic_marker_available : R.drawable.ic_marker_busy;
+            Marker m = mMap.addMarker(new MarkerOptions()
+                    .position(pos)
+                    .icon(bitmapDescriptorFromVector(markerIcon)));
+            if (m != null) {
+                m.setTag(s);
+                currentMarkers.add(m);
+            }
+        }
+    }
+
+    private void hienThiDanhSachTram(List<Station> stations) {
+        if (containerListTram == null) return;
+        containerListTram.setVisibility(View.VISIBLE);
+        containerListTram.removeAllViews();
+        if (stations != null) {
+            for (Station s : stations) {
+                View itemView = LayoutInflater.from(this).inflate(R.layout.item_station, containerListTram, false);
+                TextView name = itemView.findViewById(R.id.tvStationName);
+                TextView addr = itemView.findViewById(R.id.tvStationAddress);
+                TextView status = itemView.findViewById(R.id.tvStatus);
+                TextView dist = itemView.findViewById(R.id.tvDistance); // Giả định id này tồn tại hoặc sẽ thêm
+                
+                if (name != null) name.setText(s.getName());
+                if (addr != null) addr.setText(s.getAddress());
+                if (status != null) {
+                    status.setText(s.isAvailable() ? "● Sẵn sàng" : "● Đang bận");
+                    status.setTextColor(s.isAvailable() ? Color.parseColor("#01B763") : Color.parseColor("#FFC107"));
+                }
+                if (dist != null) dist.setText("📍 " + s.getFormattedDistance());
+                itemView.setOnClickListener(v -> {
+                    selectedStation = s;
+                    hienThiPanelThongTin(s);
+                    chuyenSangChiTiet(s);
+                });
+                containerListTram.addView(itemView);
+            }
         }
     }
 
@@ -209,7 +356,54 @@ public class ManHinhChinh extends AppCompatActivity implements OnMapReadyCallbac
         txtDiaChi.setText(s.getAddress());
         txtTrangThai.setText(s.isAvailable() ? "● Sẵn sàng" : "● Đang bận");
         txtTrangThai.setTextColor(s.isAvailable() ? Color.parseColor("#01B763") : Color.parseColor("#FFC107"));
-        txtKhoangCach.setText("📍 1.2 Km");
+        txtKhoangCach.setText("📍 " + s.getFormattedDistance());
+        
+        // Load đánh giá thực tế
+        txtRatingAvg.setText("Loading...");
+        txtReviewCount.setText("(...)");
+        loadReviewSummary(s.getName());
+    }
+
+    private void loadReviewSummary(String stationName) {
+        okhttp3.OkHttpClient client = new okhttp3.OkHttpClient();
+        String url = SupabaseConfig.SUPABASE_URL + "/rest/v1/danhgia?station_name=eq." + android.net.Uri.encode(stationName);
+        
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(url)
+                .addHeader("apikey", SupabaseConfig.SUPABASE_KEY)
+                .addHeader("Authorization", "Bearer " + SupabaseConfig.SUPABASE_KEY)
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                runOnUiThread(() -> {
+                    txtRatingAvg.setText("0.0 ★★★★★");
+                    txtReviewCount.setText("(0 reviews)");
+                });
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                if (response.isSuccessful()) {
+                    String body = response.body().string();
+                    try {
+                        JSONArray arr = new JSONArray(body);
+                        double sum = 0;
+                        for (int i = 0; i < arr.length(); i++) {
+                            sum += arr.getJSONObject(i).optDouble("rating", 0);
+                        }
+                        double avg = arr.length() > 0 ? sum / arr.length() : 0.0;
+                        int count = arr.length();
+                        
+                        runOnUiThread(() -> {
+                            txtRatingAvg.setText(String.format("%.1f ★★★★★", avg));
+                            txtReviewCount.setText("(" + count + " reviews)");
+                        });
+                    } catch (Exception e) { e.printStackTrace(); }
+                }
+            }
+        });
     }
 
     private void loadStationsFromSupabase() {
@@ -231,32 +425,10 @@ public class ManHinhChinh extends AppCompatActivity implements OnMapReadyCallbac
                         shimmerDanhSach.stopShimmer();
                         shimmerDanhSach.setVisibility(View.GONE);
                     }
-                    containerListTram.setVisibility(View.VISIBLE);
-                    containerListTram.removeAllViews();
                     if (stations != null) {
-                        for (Station s : stations) {
-                            LatLng pos = new LatLng(s.latitude, s.longitude);
-                            int markerIcon = s.isAvailable() ? R.drawable.ic_marker_available : R.drawable.ic_marker_busy;
-                            Marker m = mMap.addMarker(new MarkerOptions().position(pos).icon(bitmapDescriptorFromVector(markerIcon)));
-                            if (m != null) m.setTag(s);
-
-                            View itemView = LayoutInflater.from(this).inflate(R.layout.item_station, containerListTram, false);
-                            TextView name = itemView.findViewById(R.id.tvStationName);
-                            TextView addr = itemView.findViewById(R.id.tvStationAddress);
-                            TextView status = itemView.findViewById(R.id.tvStatus);
-                            if (name != null) name.setText(s.getName());
-                            if (addr != null) addr.setText(s.getAddress());
-                            if (status != null) {
-                                status.setText(s.isAvailable() ? "● Sẵn sàng" : "● Đang bận");
-                                status.setTextColor(s.isAvailable() ? Color.parseColor("#01B763") : Color.parseColor("#FFC107"));
-                            }
-                            itemView.setOnClickListener(v -> {
-                                selectedStation = s;
-                                hienThiPanelThongTin(s);
-                                chuyenSangChiTiet(s);
-                            });
-                            containerListTram.addView(itemView);
-                        }
+                        allStations = stations;
+                        hienThiDanhSachTram(allStations);
+                        khoiTaoMarkerMap(allStations);
                     }
                 });
             } catch (Exception e) { e.printStackTrace(); }

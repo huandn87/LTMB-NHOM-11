@@ -259,17 +259,17 @@ public class XacNhanXe extends AppCompatActivity {
                     runOnUiThread(() -> {
                         if (pd != null && pd.isShowing()) pd.dismiss();
                         Toast.makeText(XacNhanXe.this, "Thêm xe thành công!", Toast.LENGTH_SHORT).show();
-                        
                         boolean isFromRegister = getIntent().getBooleanExtra("IS_FROM_REGISTER", false);
                         Intent intent;
                         if (isFromRegister) {
-                            intent = new Intent(XacNhanXe.this, com.example.voltapp.home.ManHinhChinh.class);
+                            // Onboarding flow: Show "Setup Complete" then go to Home
+                            intent = new Intent(XacNhanXe.this, ThietLapHoanTat.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                         } else {
+                            // Manual addition from account: Go back to Account/Cars list
                             intent = new Intent(XacNhanXe.this, com.example.voltapp.account.TaiKhoanActivity.class);
                             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         }
-                        
                         startActivity(intent);
                         finish();
                     });

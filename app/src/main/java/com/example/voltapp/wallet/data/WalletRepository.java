@@ -49,6 +49,7 @@ public class WalletRepository {
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
         loadBalanceFromCache();
+        loadTransactionsFromCache();
     }
 
     private void loadBalanceFromCache() {
@@ -62,6 +63,51 @@ public class WalletRepository {
         if (context != null) {
             android.content.SharedPreferences prefs = context.getSharedPreferences("wallet_prefs_" + customerId, android.content.Context.MODE_PRIVATE);
             prefs.edit().putLong("last_balance", balance).apply();
+        }
+    }
+
+    private void loadTransactionsFromCache() {
+        if (context == null || customerId == -1) return;
+        android.content.SharedPreferences prefs = context.getSharedPreferences("wallet_prefs_" + customerId, android.content.Context.MODE_PRIVATE);
+        String json = prefs.getString("tx_cache", "[]");
+        try {
+            JSONArray arr = new JSONArray(json);
+            transactions.clear();
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.getJSONObject(i);
+                transactions.add(new WalletTransaction(
+                    o.optLong("id"),
+                    o.optString("title"),
+                    o.optString("subtitle"),
+                    o.optLong("amount"),
+                    TransactionType.valueOf(o.optString("type", "CREDIT")),
+                    o.optString("created_at")
+                ));
+            }
+        } catch (Exception e) {
+            Log.e("WalletRepo", "Lỗi tải cache giao dịch: " + e.getMessage());
+        }
+    }
+
+    private void saveTransactionsToCache() {
+        if (context == null || customerId == -1) return;
+        android.content.SharedPreferences prefs = context.getSharedPreferences("wallet_prefs_" + customerId, android.content.Context.MODE_PRIVATE);
+        try {
+            JSONArray arr = new JSONArray();
+            for (WalletTransaction tx : transactions) {
+                if (tx.getId() == 0) continue; 
+                JSONObject o = new JSONObject();
+                o.put("id", tx.getId());
+                o.put("title", tx.getTitle());
+                o.put("subtitle", tx.getSubtitle());
+                o.put("amount", tx.getAmount());
+                o.put("type", tx.getType().name());
+                o.put("created_at", tx.getCreatedAt());
+                arr.put(o);
+            }
+            prefs.edit().putString("tx_cache", arr.toString()).apply();
+        } catch (Exception e) {
+            Log.e("WalletRepo", "Lỗi lưu cache giao dịch: " + e.getMessage());
         }
     }
 
@@ -192,7 +238,7 @@ public class WalletRepository {
     }
 
     public List<WalletTransaction> getTransactionsFromSupabase() throws Exception {
-        if (customerId == -1) return new ArrayList<>();
+        if (customerId == -1) return transactions;
 
         String endpoint = SupabaseClientProvider.SUPABASE_URL + "/rest/v1/giao_dich?customer_id=eq." + customerId + "&order=created_at.desc";
         HttpURLConnection conn = createConnection(endpoint, "GET");
@@ -204,17 +250,31 @@ public class WalletRepository {
             transactions.clear();
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject o = arr.getJSONObject(i);
+                
+                String typeStr = o.optString("type", "CREDIT").toUpperCase(Locale.ROOT);
+                TransactionType type = TransactionType.CREDIT;
+                if (typeStr.contains("DEBIT")) type = TransactionType.DEBIT;
+
                 transactions.add(new WalletTransaction(
-                    o.optLong("id", 0),
+                    o.optLong("id", i + 1),
                     o.optString("title", "Giao dịch"),
                     o.optString("subtitle", ""),
                     o.optLong("amount", 0),
-                    TransactionType.valueOf(o.optString("type", "CREDIT")),
+                    type,
                     o.optString("created_at", "")
                 ));
             }
+            saveTransactionsToCache();
+        } else {
+            String errorBody = readStream(conn.getErrorStream());
+            Log.e("WalletRepo", "Lỗi tải giao dịch (" + code + "): " + errorBody);
         }
-        return getTransactions();
+        
+        if (transactions.isEmpty()) {
+            transactions.add(new WalletTransaction(0, "Chào mừng", "Bắt đầu sử dụng ví", 0, TransactionType.CREDIT, now()));
+        }
+        
+        return transactions;
     }
 
     public List<WalletTransaction> getTransactions() {
@@ -241,6 +301,16 @@ public class WalletRepository {
         
         // 2. Lưu giao dịch vào Supabase
         saveTransactionToSupabase("Nạp ví EVCharger", "Nạp qua " + method.getName(), amount, TransactionType.CREDIT);
+
+        // 3. Cập nhật local list để hiển thị ngay lập tức
+        transactions.add(0, new WalletTransaction(
+                System.currentTimeMillis(),
+                "Nạp ví EVCharger",
+                "Nạp qua " + method.getName(),
+                amount,
+                TransactionType.CREDIT,
+                now()
+        ));
 
         balance += amount;
         return new TopUpReceipt(amount, method.getName());

@@ -19,4 +19,13 @@ public class Station implements Serializable {
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
     public boolean isAvailable() { return "available".equalsIgnoreCase(status); }
+
+    // Dữ liệu tạm thời để sắp xếp, không lưu vào DB
+    public float distanceValue = -1;
+
+    public String getFormattedDistance() {
+        if (distanceValue < 0) return "---";
+        if (distanceValue < 1000) return String.format("%.0f m", distanceValue);
+        return String.format("%.1f km", distanceValue / 1000.0);
+    }
 }

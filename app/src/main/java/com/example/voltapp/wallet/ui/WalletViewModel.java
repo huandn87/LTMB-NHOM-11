@@ -65,14 +65,16 @@ public class WalletViewModel extends ViewModel {
                         
                         mainHandler.post(() -> {
                             WalletUiState current = getCurrentState();
-                            uiState.setValue(new WalletUiState(
+                            WalletUiState newState = new WalletUiState(
                                     balance,
                                     current.getPaymentMethods(),
                                     txs,
                                     current.getSelectedAmount(),
                                     current.getSelectedMethodId(),
                                     current.getTopUpReceipt()
-                            ));
+                            );
+                            Log.d("WalletVM", "Cập nhật UI State: Txs count = " + newState.getTransactions().size());
+                            uiState.setValue(newState);
                         });
                     } else {
                         Log.e("WalletVM", "Không tìm thấy khách hàng cho accountId: " + accountId);
