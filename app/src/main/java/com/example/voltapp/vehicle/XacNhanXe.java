@@ -14,6 +14,7 @@ import android.app.ProgressDialog;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 import com.example.voltapp.account.api.SupabaseService;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class XacNhanXe extends AppCompatActivity {
@@ -55,41 +56,163 @@ public class XacNhanXe extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
         final int accountId = prefs.getInt("account_id", 0);
 
-        // Tạo bản ghi khachhang trước để thỏa mãn Foreign Key
+        if (accountId == 0) {
+            Toast.makeText(this, "Lỗi: Bạn chưa đăng nhập hoặc phiên làm việc hết hạn.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        final ProgressDialog pd = new ProgressDialog(this);
+        pd.setMessage("Đang kiểm tra thông tin khách hàng...");
+        pd.setCancelable(false);
+        pd.show();
+
+        // Bước 1: Kiểm tra xem đã có bản ghi khachhang chưa
+        api.get("khachhang?account_id=eq." + accountId, new SupabaseService.ApiCallback() {
+            @Override
+            public void onSuccess(String json) {
+                try {
+                    JSONArray arr = new JSONArray(json);
+                    if (arr.length() > 0) {
+                        // Đã có, lấy customer_id và lưu xe
+                        int customerId = arr.getJSONObject(0).getInt("customer_id");
+                        runOnUiThread(() -> {
+                            pd.setMessage("Đang lưu thông tin xe...");
+                            saveVehicleToSupabase(brand, model, modelYear, type, battery, chargeStandardId, customerId, pd);
+                        });
+                    } else {
+                        // Chưa có, tạo mới
+                        runOnUiThread(() -> {
+                            pd.setMessage("Đang khởi tạo hồ sơ khách hàng...");
+                            createNewCustomerAndSave(brand, model, modelYear, type, battery, chargeStandardId, accountId, pd);
+                        });
+                    }
+                } catch (Exception e) {
+                    runOnUiThread(() -> {
+                        pd.dismiss();
+                        Toast.makeText(XacNhanXe.this, "Lỗi xử lý dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                runOnUiThread(() -> {
+                    pd.dismiss();
+                    Toast.makeText(XacNhanXe.this, "Lỗi kết nối máy chủ: " + message, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
+
+    private void createNewCustomerAndSave(final String brand, final String model, final int modelYear, final String type, final double battery, final int chargeStandardId, final int accountId, final ProgressDialog pd) {
+        SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
         JSONObject customerJson = new JSONObject();
         try {
-            customerJson.put("customer_id", accountId);
             customerJson.put("account_id", accountId);
-            customerJson.put("name", prefs.getString("username", "Người dùng"));
-            customerJson.put("phone", prefs.getString("user_phone", "0779497860"));
+            customerJson.put("name", prefs.getString("username", "Người dùng " + accountId));
+            customerJson.put("phone", prefs.getString("user_phone", ""));
         } catch (Exception e) { e.printStackTrace(); }
 
         api.post("khachhang", customerJson.toString(), new SupabaseService.ApiCallback() {
             @Override
             public void onSuccess(String json) {
-                // Đã tạo thành công hoặc đã tồn tại
-                saveVehicleToSupabase(brand, model, modelYear, type, battery, chargeStandardId);
+                try {
+                    // Supabase POST với Prefer: return=representation trả về mảng
+                    JSONArray arr = new JSONArray(json);
+                    if (arr.length() > 0) {
+                        int customerId = arr.getJSONObject(0).getInt("customer_id");
+                        runOnUiThread(() -> {
+                            pd.setMessage("Đang lưu thông tin xe...");
+                            saveVehicleToSupabase(brand, model, modelYear, type, battery, chargeStandardId, customerId, pd);
+                        });
+                    } else {
+                        // Nếu không trả về dữ liệu, thử query lại để lấy customer_id
+                        retryGetCustomerAndSave(brand, model, modelYear, type, battery, chargeStandardId, accountId, pd);
+                    }
+                } catch (Exception e) {
+                    retryGetCustomerAndSave(brand, model, modelYear, type, battery, chargeStandardId, accountId, pd);
+                }
             }
 
             @Override
             public void onError(String message) {
-                // Thử lưu xe luôn, có thể DB đã có sẵn
-                saveVehicleToSupabase(brand, model, modelYear, type, battery, chargeStandardId);
+                runOnUiThread(() -> {
+                    pd.dismiss();
+                    android.util.Log.e("XacNhanXe", "Lỗi tạo hồ sơ khách hàng: " + message);
+                    Toast.makeText(XacNhanXe.this, "Không thể tạo hồ sơ khách hàng: " + message, Toast.LENGTH_LONG).show();
+                });
             }
         });
     }
 
-    private void saveVehicleToSupabase(final String brand, final String model, final int modelYear, final String type, final double battery, final int chargeStandardId) {
-        final ProgressDialog pd = new ProgressDialog(this);
-        pd.setMessage("Đang lưu thông tin xe...");
-        pd.show();
+    private void retryGetCustomerAndSave(final String brand, final String model, final int modelYear, final String type, final double battery, final int chargeStandardId, final int accountId, final ProgressDialog pd) {
+        api.get("khachhang?account_id=eq." + accountId, new SupabaseService.ApiCallback() {
+            @Override
+            public void onSuccess(String json) {
+                try {
+                    JSONArray arr = new JSONArray(json);
+                    if (arr.length() > 0) {
+                        int customerId = arr.getJSONObject(0).getInt("customer_id");
+                        runOnUiThread(() -> saveVehicleToSupabase(brand, model, modelYear, type, battery, chargeStandardId, customerId, pd));
+                    } else {
+                        runOnUiThread(() -> {
+                            pd.dismiss();
+                            Toast.makeText(XacNhanXe.this, "Lỗi: Không tìm thấy hồ sơ khách hàng sau khi tạo.", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                } catch (Exception e) {
+                    runOnUiThread(() -> {
+                        pd.dismiss();
+                        Toast.makeText(XacNhanXe.this, "Lỗi phân tích dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }
+            @Override
+            public void onError(String message) {
+                runOnUiThread(() -> {
+                    pd.dismiss();
+                    Toast.makeText(XacNhanXe.this, "Lỗi truy vấn hồ sơ: " + message, Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
+    }
 
-        SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
-        final int accountId = prefs.getInt("account_id", 0);
+    private void saveVehicleToSupabase(final String brand, final String model, final int modelYear, final String type, final double battery, final int chargeStandardId, final int customerId, final ProgressDialog pd) {
+        // Workaround cho lỗi "duplicate key value violates unique constraint phuongtien_pkey"
+        // Lấy vehicle_id lớn nhất hiện có và cộng thêm 1
+        api.get("phuongtien?order=vehicle_id.desc&limit=1", new SupabaseService.ApiCallback() {
+            @Override
+            public void onSuccess(String json) {
+                int nextId = 1;
+                try {
+                    JSONArray arr = new JSONArray(json);
+                    if (arr.length() > 0) {
+                        nextId = arr.getJSONObject(0).getInt("vehicle_id") + 1;
+                    }
+                } catch (Exception e) {
+                    // Nếu lỗi, thử dùng timestamp làm ID tạm thời (phải đảm bảo không quá lớn cho kiểu INT)
+                    nextId = (int) (System.currentTimeMillis() % 1000000000L);
+                }
+                
+                final int finalVehicleId = nextId;
+                runOnUiThread(() -> performActualSave(brand, model, modelYear, type, battery, chargeStandardId, customerId, finalVehicleId, pd));
+            }
 
+            @Override
+            public void onError(String message) {
+                // Nếu không lấy được max ID, thử lưu không ID (có thể vẫn lỗi nếu sequence hỏng)
+                runOnUiThread(() -> performActualSave(brand, model, modelYear, type, battery, chargeStandardId, customerId, -1, pd));
+            }
+        });
+    }
+
+    private void performActualSave(String brand, String model, int modelYear, String type, double battery, int chargeStandardId, int customerId, int vehicleId, ProgressDialog pd) {
         try {
             JSONObject json = new JSONObject();
-            json.put("customer_id", accountId);
+            if (vehicleId != -1) {
+                json.put("vehicle_id", vehicleId);
+            }
+            json.put("customer_id", customerId);
             json.put("manufacturer", brand);
             json.put("name", model);
             json.put("model_year", modelYear);
@@ -101,7 +224,8 @@ public class XacNhanXe extends AppCompatActivity {
                 @Override
                 public void onSuccess(String jsonResponse) {
                     runOnUiThread(() -> {
-                        pd.dismiss();
+                        if (pd != null && pd.isShowing()) pd.dismiss();
+                        Toast.makeText(XacNhanXe.this, "Thêm xe thành công!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(XacNhanXe.this, MyCarsActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
@@ -112,14 +236,14 @@ public class XacNhanXe extends AppCompatActivity {
                 @Override
                 public void onError(final String message) {
                     runOnUiThread(() -> {
-                        pd.dismiss();
+                        if (pd != null && pd.isShowing()) pd.dismiss();
                         android.util.Log.e("XacNhanXe", "Lỗi lưu xe: " + message);
-                        Toast.makeText(XacNhanXe.this, "Lỗi lưu xe (ID=" + accountId + "): " + message, Toast.LENGTH_LONG).show();
+                        Toast.makeText(XacNhanXe.this, "Lỗi lưu xe: " + message, Toast.LENGTH_LONG).show();
                     });
                 }
             });
         } catch (Exception e) {
-            pd.dismiss();
+            if (pd != null && pd.isShowing()) pd.dismiss();
             Toast.makeText(this, "Lỗi tạo dữ liệu: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }

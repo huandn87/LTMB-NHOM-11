@@ -41,6 +41,51 @@ public class WalletViewModel extends ViewModel {
         return uiState;
     }
 
+    public void initUserWallet(int accountId) {
+        executorService.execute(() -> {
+            try {
+                Log.d("WalletVM", "Khởi tạo ví cho account: " + accountId);
+                // 1. Tìm customer_id từ account_id
+                String url = com.example.voltapp.wallet.data.SupabaseClientProvider.SUPABASE_URL + "/rest/v1/khachhang?account_id=eq." + accountId + "&select=customer_id";
+                java.net.HttpURLConnection conn = repository.createConnection(url, "GET");
+                
+                int code = conn.getResponseCode();
+                if (code == 200) {
+                    String body = repository.readStream(conn.getInputStream());
+                    org.json.JSONArray arr = new org.json.JSONArray(body);
+                    if (arr.length() > 0) {
+                        int customerId = arr.getJSONObject(0).getInt("customer_id");
+                        repository.setCustomerId(customerId);
+                        
+                        // 2. Tải số dư và giao dịch
+                        long balance = repository.getBalanceFromSupabase();
+                        List<com.example.voltapp.wallet.model.WalletTransaction> txs = repository.getTransactionsFromSupabase();
+                        
+                        Log.d("WalletVM", "Tải xong: Balance=" + balance + ", Txs=" + txs.size());
+                        
+                        mainHandler.post(() -> {
+                            WalletUiState current = getCurrentState();
+                            uiState.setValue(new WalletUiState(
+                                    balance,
+                                    current.getPaymentMethods(),
+                                    txs,
+                                    current.getSelectedAmount(),
+                                    current.getSelectedMethodId(),
+                                    current.getTopUpReceipt()
+                            ));
+                        });
+                    } else {
+                        Log.e("WalletVM", "Không tìm thấy khách hàng cho accountId: " + accountId);
+                    }
+                } else {
+                    Log.e("WalletVM", "Lỗi API khachhang: " + code);
+                }
+            } catch (Exception e) {
+                Log.e("WalletVM", "Lỗi khởi tạo ví người dùng", e);
+            }
+        });
+    }
+
     private void loadPaymentMethodsFromSupabase() {
         executorService.execute(() -> {
             try {

@@ -22,8 +22,9 @@ public class ChonModel extends AppCompatActivity {
         setContentView(R.layout.activity_chon_model);
 
         // Nhận tên Hãng xe từ màn hình trước (VD: Tesla)
-        String tenHangXe = getIntent().getStringExtra("TEN_HANG_XE_DA_CHON");
-        if (tenHangXe == null) tenHangXe = "VinFast";
+        String rawHangXe = getIntent().getStringExtra("TEN_HANG_XE_DA_CHON");
+        if (rawHangXe == null) rawHangXe = "VinFast";
+        final String tenHangXe = rawHangXe;
 
         // Cập nhật tiêu đề nếu cần
         TextView txtTitle = findViewById(R.id.TXT_TITLE_MODEL); // Giả sử có ID này, nếu không thì bỏ qua
@@ -49,7 +50,7 @@ public class ChonModel extends AppCompatActivity {
             encodedHangXe = java.net.URLEncoder.encode(tenHangXe, "UTF-8");
         } catch (Exception e) {}
 
-        String query = "phuongtien?manufacturer=eq." + encodedHangXe;
+        String query = "phuongtien?manufacturer=eq." + encodedHangXe + "&customer_id=is.null";
         api.get(query, new SupabaseService.ApiCallback() {
             @Override
             public void onSuccess(String json) {

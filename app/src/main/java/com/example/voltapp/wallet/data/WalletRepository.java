@@ -35,13 +35,34 @@ public class WalletRepository {
     private static final AtomicLong idGenerator = new AtomicLong(System.currentTimeMillis());
 
     private static List<PaymentMethod> paymentMethods = new ArrayList<>();
-    private static final List<WalletTransaction> transactions = new ArrayList<>();
-    private static long balance = 100_000L;
-    private static boolean defaultDataInitialized = false;
+    private int customerId = -1;
+    private long balance = 0L;
+    private final List<WalletTransaction> transactions = new ArrayList<>();
+    private android.content.Context context;
 
-    public WalletRepository() {
+    public WalletRepository(android.content.Context context) {
+        this.context = context;
         initDefaultPaymentMethodsIfNeeded();
-        initDefaultTransactionsIfNeeded();
+        loadBalanceFromCache();
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
+        loadBalanceFromCache();
+    }
+
+    private void loadBalanceFromCache() {
+        if (context != null) {
+            android.content.SharedPreferences prefs = context.getSharedPreferences("wallet_prefs_" + customerId, android.content.Context.MODE_PRIVATE);
+            this.balance = prefs.getLong("last_balance", 0L);
+        }
+    }
+
+    private void saveBalanceToCache(long balance) {
+        if (context != null) {
+            android.content.SharedPreferences prefs = context.getSharedPreferences("wallet_prefs_" + customerId, android.content.Context.MODE_PRIVATE);
+            prefs.edit().putLong("last_balance", balance).apply();
+        }
     }
 
     private void initDefaultPaymentMethodsIfNeeded() {
@@ -55,37 +76,22 @@ public class WalletRepository {
         paymentMethods.add(new PaymentMethod("momo", "MoMo", "Ví điện tử phổ biến", "MM", R.color.badge_momo, R.drawable.ic_momo));
     }
 
-    private void initDefaultTransactionsIfNeeded() {
-        if (defaultDataInitialized) {
-            return;
+    public long getBalanceFromSupabase() throws Exception {
+        if (customerId == -1) return 0L;
+        
+        String endpoint = SupabaseClientProvider.SUPABASE_URL + "/rest/v1/khachhang?customer_id=eq." + customerId + "&select=balance";
+        HttpURLConnection conn = createConnection(endpoint, "GET");
+        
+        int code = conn.getResponseCode();
+        if (code == 200) {
+            String body = readStream(conn.getInputStream());
+            JSONArray arr = new JSONArray(body);
+            if (arr.length() > 0) {
+                this.balance = arr.getJSONObject(0).optLong("balance", 0L);
+                saveBalanceToCache(this.balance);
+            }
         }
-
-        transactions.add(new WalletTransaction(
-                idGenerator.incrementAndGet(),
-                "Trạm sạc số 1",
-                "Thanh toán phiên sạc",
-                125_000L,
-                TransactionType.DEBIT,
-                "05/12/2025 - 10:00"
-        ));
-        transactions.add(new WalletTransaction(
-                idGenerator.incrementAndGet(),
-                "Nạp ví EVCharger",
-                "Nạp tiền thành công",
-                125_000L,
-                TransactionType.CREDIT,
-                "05/12/2025 - 09:50"
-        ));
-        transactions.add(new WalletTransaction(
-                idGenerator.incrementAndGet(),
-                "Trạm sạc số 1",
-                "Thanh toán phiên sạc",
-                125_000L,
-                TransactionType.DEBIT,
-                "05/12/2025 - 10:00"
-        ));
-
-        defaultDataInitialized = true;
+        return this.balance;
     }
 
     public long getBalance() {
@@ -100,18 +106,8 @@ public class WalletRepository {
         String endpoint = SupabaseClientProvider.SUPABASE_URL
                 + "/rest/v1/pttt?select=method_id,name,description,status&order=method_id.asc";
 
-        HttpURLConnection connection = null;
+        HttpURLConnection connection = createConnection(endpoint, "GET");
         try {
-            URL url = new URL(endpoint);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setConnectTimeout(15000);
-            connection.setReadTimeout(15000);
-            connection.setRequestProperty("apikey", SupabaseClientProvider.SUPABASE_KEY);
-            connection.setRequestProperty("Authorization", "Bearer " + SupabaseClientProvider.SUPABASE_KEY);
-            connection.setRequestProperty("Accept", "application/json");
-            connection.setRequestProperty("Content-Type", "application/json");
-
             int responseCode = connection.getResponseCode();
             InputStream stream = responseCode >= 200 && responseCode < 300
                     ? connection.getInputStream()
@@ -124,17 +120,12 @@ public class WalletRepository {
 
             JSONArray array = new JSONArray(body);
             List<PaymentMethod> methods = new ArrayList<>();
-            List<Pttt> rows = new ArrayList<>();
 
             for (int i = 0; i < array.length(); i++) {
                 JSONObject item = array.getJSONObject(i);
                 Pttt pttt = Pttt.fromJson(item);
-                rows.add(pttt);
                 methods.add(mapToPaymentMethod(pttt));
             }
-
-            Log.d("PTTT_TEST", "Data from Supabase: " + rows);
-            Log.d("PTTT_TEST", "Methods size: " + methods.size());
 
             if (!methods.isEmpty()) {
                 paymentMethods = methods;
@@ -145,6 +136,19 @@ public class WalletRepository {
                 connection.disconnect();
             }
         }
+    }
+
+    public HttpURLConnection createConnection(String endpoint, String method) throws IOException {
+        URL url = new URL(endpoint);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod(method);
+        connection.setConnectTimeout(15000);
+        connection.setReadTimeout(15000);
+        connection.setRequestProperty("apikey", SupabaseClientProvider.SUPABASE_KEY);
+        connection.setRequestProperty("Authorization", "Bearer " + SupabaseClientProvider.SUPABASE_KEY);
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Content-Type", "application/json");
+        return connection;
     }
 
     private PaymentMethod mapToPaymentMethod(Pttt item) {
@@ -187,11 +191,39 @@ public class WalletRepository {
         );
     }
 
+    public List<WalletTransaction> getTransactionsFromSupabase() throws Exception {
+        if (customerId == -1) return new ArrayList<>();
+
+        String endpoint = SupabaseClientProvider.SUPABASE_URL + "/rest/v1/giao_dich?customer_id=eq." + customerId + "&order=created_at.desc";
+        HttpURLConnection conn = createConnection(endpoint, "GET");
+        
+        int code = conn.getResponseCode();
+        if (code == 200) {
+            String body = readStream(conn.getInputStream());
+            JSONArray arr = new JSONArray(body);
+            transactions.clear();
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject o = arr.getJSONObject(i);
+                transactions.add(new WalletTransaction(
+                    o.optLong("id", 0),
+                    o.optString("title", "Giao dịch"),
+                    o.optString("subtitle", ""),
+                    o.optLong("amount", 0),
+                    TransactionType.valueOf(o.optString("type", "CREDIT")),
+                    o.optString("created_at", "")
+                ));
+            }
+        }
+        return getTransactions();
+    }
+
     public List<WalletTransaction> getTransactions() {
         return new ArrayList<>(transactions);
     }
 
     public TopUpReceipt topUp(long amount, String methodId) {
+        if (customerId == -1) throw new IllegalStateException("User not logged in");
+        
         PaymentMethod method = null;
         for (PaymentMethod item : paymentMethods) {
             if (item.getId().equals(methodId)) {
@@ -203,23 +235,66 @@ public class WalletRepository {
             throw new IllegalArgumentException("Payment method not found: " + methodId);
         }
 
+        // 1. Cập nhật số dư trong Supabase
+        saveBalanceToCache(balance + amount);
+        updateBalanceInSupabase(balance + amount);
+        
+        // 2. Lưu giao dịch vào Supabase
+        saveTransactionToSupabase("Nạp ví EVCharger", "Nạp qua " + method.getName(), amount, TransactionType.CREDIT);
+
         balance += amount;
-        transactions.add(0, new WalletTransaction(
-                idGenerator.incrementAndGet(),
-                "Nạp ví EVCharger",
-                "Nạp qua " + method.getName(),
-                amount,
-                TransactionType.CREDIT,
-                now()
-        ));
         return new TopUpReceipt(amount, method.getName());
     }
 
-    private String now() {
-        return new SimpleDateFormat("dd/MM/yyyy - HH:mm", Locale.getDefault()).format(new Date());
+    private void updateBalanceInSupabase(long newBalance) {
+        new Thread(() -> {
+            try {
+                String endpoint = SupabaseClientProvider.SUPABASE_URL + "/rest/v1/khachhang?customer_id=eq." + customerId;
+                HttpURLConnection conn = createConnection(endpoint, "PATCH");
+                conn.setDoOutput(true);
+                JSONObject json = new JSONObject();
+                json.put("balance", newBalance);
+                conn.getOutputStream().write(json.toString().getBytes(StandardCharsets.UTF_8));
+                int code = conn.getResponseCode();
+                if (code >= 400) {
+                    Log.e("WalletRepo", "Lỗi cập nhật số dư: " + code);
+                }
+            } catch (Exception e) {
+                Log.e("WalletRepo", "Exception update balance", e);
+            }
+        }).start();
     }
 
-    private String readStream(InputStream inputStream) throws IOException {
+    private void saveTransactionToSupabase(String title, String subtitle, long amount, TransactionType type) {
+        new Thread(() -> {
+            try {
+                String endpoint = SupabaseClientProvider.SUPABASE_URL + "/rest/v1/giao_dich";
+                HttpURLConnection conn = createConnection(endpoint, "POST");
+                conn.setDoOutput(true);
+                JSONObject json = new JSONObject();
+                json.put("customer_id", customerId);
+                json.put("title", title);
+                json.put("subtitle", subtitle);
+                json.put("amount", amount);
+                json.put("type", type.name());
+                json.put("created_at", now());
+                conn.getOutputStream().write(json.toString().getBytes(StandardCharsets.UTF_8));
+                int code = conn.getResponseCode();
+                if (code >= 400) {
+                    Log.e("WalletRepo", "Lỗi lưu giao dịch: " + code);
+                }
+            } catch (Exception e) {
+                Log.e("WalletRepo", "Exception save transaction", e);
+            }
+        }).start();
+    }
+
+    private String now() {
+        // Sử dụng định dạng ISO để Postgres có thể nhận diện tốt hơn
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+    }
+
+    public String readStream(InputStream inputStream) throws IOException {
         if (inputStream == null) {
             return "";
         }

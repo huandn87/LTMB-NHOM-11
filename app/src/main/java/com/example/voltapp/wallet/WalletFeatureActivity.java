@@ -35,8 +35,19 @@ public class WalletFeatureActivity extends AppCompatActivity {
 
         walletViewModel = new ViewModelProvider(
                 this,
-                new WalletViewModelFactory(new WalletRepository())
+                new WalletViewModelFactory(new WalletRepository(getApplicationContext()))
         ).get(WalletViewModel.class);
+
+        // Lấy account_id từ session để tải ví riêng
+        android.content.SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
+        int accountId = prefs.getInt("account_id", 0);
+        if (accountId != 0) {
+            walletViewModel.initUserWallet(accountId);
+        } else {
+            Toast.makeText(this, "Vui lòng đăng nhập để xem ví", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         if (savedInstanceState == null) {
             openWalletHome(false);

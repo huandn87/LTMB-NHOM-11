@@ -45,7 +45,7 @@ public class ChonHang extends AppCompatActivity {
         // ==========================================
         progressBar.setVisibility(View.VISIBLE);
         SupabaseService api = new SupabaseService();
-        api.get("phuongtien", new SupabaseService.ApiCallback() {
+        api.get("phuongtien?customer_id=is.null", new SupabaseService.ApiCallback() {
             @Override
             public void onSuccess(String json) {
                 runOnUiThread(() -> {

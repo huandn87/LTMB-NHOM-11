@@ -35,7 +35,12 @@ public class ChiTietXeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chi_tiet_xe);
 
         api = new SupabaseService();
-        vehicleId = getIntent().getStringExtra("VEHICLE_ID");
+        int id = getIntent().getIntExtra("VEHICLE_ID", -1);
+        if (id == -1) {
+            vehicleId = getIntent().getStringExtra("VEHICLE_ID");
+        } else {
+            vehicleId = String.valueOf(id);
+        }
 
         if (vehicleId == null) {
             Toast.makeText(this, "Không nhận được mã xe!", Toast.LENGTH_SHORT).show();

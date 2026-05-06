@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.voltapp.R;
 import com.example.voltapp.account.api.SupabaseService;
 import com.example.voltapp.account.model.Vehicle;
+import androidx.annotation.NonNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -40,6 +41,51 @@ public class MyCarsActivity extends AppCompatActivity {
         });
         
         rv.setAdapter(adapter);
+
+        // Thêm tính năng vuốt để xóa (Swipe to Delete)
+        androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback swipeCallback = 
+            new androidx.recyclerview.widget.ItemTouchHelper.SimpleCallback(0, androidx.recyclerview.widget.ItemTouchHelper.LEFT) {
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    int position = viewHolder.getAdapterPosition();
+                    Vehicle vehicle = vehicles.get(position);
+                    
+                    // Hiển thị dialog xác nhận xóa
+                    new androidx.appcompat.app.AlertDialog.Builder(MyCarsActivity.this)
+                        .setTitle("Xác nhận xóa")
+                        .setMessage("Bạn có chắc chắn muốn xóa xe " + vehicle.manufacturer + " " + vehicle.model + " không?")
+                        .setPositiveButton("Xóa", (dialog, which) -> {
+                            api.deleteVehicle(vehicle.vehicleId, new SupabaseService.ApiCallback() {
+                                @Override 
+                                public void onSuccess(String json) { 
+                                    runOnUiThread(() -> { 
+                                        vehicles.remove(position); 
+                                        adapter.notifyItemRemoved(position);
+                                        Toast.makeText(MyCarsActivity.this, "Đã xóa xe thành công", Toast.LENGTH_SHORT).show();
+                                    }); 
+                                }
+                                @Override 
+                                public void onError(String message) { 
+                                    runOnUiThread(() -> {
+                                        adapter.notifyItemChanged(position);
+                                        Toast.makeText(MyCarsActivity.this, "Lỗi xóa: " + message, Toast.LENGTH_SHORT).show();
+                                    });
+                                }
+                            });
+                        })
+                        .setNegativeButton("Hủy", (dialog, which) -> {
+                            adapter.notifyItemChanged(position); // Khôi phục lại item
+                        })
+                        .setCancelable(false)
+                        .show();
+                }
+            };
+        new androidx.recyclerview.widget.ItemTouchHelper(swipeCallback).attachToRecyclerView(rv);
         
         // Nút thêm xe mới
         findViewById(R.id.btn_add_car).setOnClickListener(v -> {
@@ -56,10 +102,43 @@ public class MyCarsActivity extends AppCompatActivity {
     private void loadVehicles() {
         android.content.SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
         int accountId = prefs.getInt("account_id", 0);
-        // Toast.makeText(this, "Đang tải xe cho ID: " + accountId, Toast.LENGTH_SHORT).show();
         
-        // Lọc xe theo customer_id của người dùng hiện tại
-        api.get("phuongtien?customer_id=eq." + accountId, new SupabaseService.ApiCallback() {
+        if (accountId == 0) {
+            Toast.makeText(this, "Vui lòng đăng nhập lại", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Bước 1: Lấy actual customer_id từ bảng khachhang dựa trên account_id
+        api.get("khachhang?account_id=eq." + accountId, new SupabaseService.ApiCallback() {
+            @Override
+            public void onSuccess(String json) {
+                try {
+                    JSONArray arr = new JSONArray(json);
+                    if (arr.length() > 0) {
+                        int actualCustomerId = arr.getJSONObject(0).getInt("customer_id");
+                        fetchVehiclesByCustomerId(actualCustomerId);
+                    } else {
+                        runOnUiThread(() -> {
+                            vehicles.clear();
+                            adapter.notifyDataSetChanged();
+                            Toast.makeText(MyCarsActivity.this, "Bạn chưa có xe nào. Hãy thêm xe mới!", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                runOnUiThread(() -> Toast.makeText(MyCarsActivity.this, "Lỗi lấy thông tin khách hàng: " + message, Toast.LENGTH_SHORT).show());
+            }
+        });
+    }
+
+    private void fetchVehiclesByCustomerId(int customerId) {
+        // Bước 2: Lọc xe theo customer_id thực tế
+        api.get("phuongtien?customer_id=eq." + customerId, new SupabaseService.ApiCallback() {
             @Override public void onSuccess(String json) {
                 runOnUiThread(() -> {
                     try {
