@@ -10,14 +10,24 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.voltapp.R;
 import com.example.voltapp.map.Station;
+import com.example.voltapp.map.SupabaseConfig;
+import com.example.voltapp.model.Review;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
+import okhttp3.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChiTietTramSac extends AppCompatActivity {
 
@@ -25,6 +35,11 @@ public class ChiTietTramSac extends AppCompatActivity {
     private double lng = 0.0;
     private String tenTramHienTai = "Trạm sạc";
     private String statusHienTai = "Sẵn sàng";
+    
+    private RecyclerView rvDanhGia;
+    private ReviewAdapter reviewAdapter;
+    private List<Review> reviewList = new ArrayList<>();
+    private String loggedUsername = "Khách";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +89,137 @@ public class ChiTietTramSac extends AppCompatActivity {
         });
 
         findViewById(R.id.BTN_BACK_CHI_TIET).setOnClickListener(v -> finish());
+        
+        // Lấy username đã đăng nhập
+        SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
+        loggedUsername = prefs.getString("username", "Khách");
+
+        initReviews();
         setupTabs();
+    }
+
+    private void initReviews() {
+        rvDanhGia = findViewById(R.id.RV_DANH_GIA);
+        if (rvDanhGia != null) {
+            rvDanhGia.setLayoutManager(new LinearLayoutManager(this));
+            reviewAdapter = new ReviewAdapter(reviewList);
+            rvDanhGia.setAdapter(reviewAdapter);
+        }
+
+        findViewById(R.id.BTN_WRITE_REVIEW).setOnClickListener(v -> showAddReviewDialog());
+        loadReviews();
+    }
+
+    private void loadReviews() {
+        OkHttpClient client = new OkHttpClient();
+        String url = SupabaseConfig.SUPABASE_URL + "/rest/v1/danhgia?station_name=eq." + tenTramHienTai + "&select=*";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("apikey", SupabaseConfig.SUPABASE_KEY)
+                .addHeader("Authorization", "Bearer " + SupabaseConfig.SUPABASE_KEY)
+                .get()
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> Toast.makeText(ChiTietTramSac.this, "Lỗi tải đánh giá", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String body = response.body() != null ? response.body().string() : "[]";
+                try {
+                    Gson gson = new Gson();
+                    List<Review> fetched = gson.fromJson(body, new TypeToken<List<Review>>(){}.getType());
+                    runOnUiThread(() -> {
+                        reviewList.clear();
+                        if (fetched != null) {
+                            reviewList.addAll(fetched);
+                            updateRatingUI();
+                        }
+                        reviewAdapter.notifyDataSetChanged();
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    private void updateRatingUI() {
+        if (reviewList.isEmpty()) return;
+        double sum = 0;
+        for (Review r : reviewList) sum += r.rating;
+        double avg = sum / reviewList.size();
+        
+        TextView txtAvg = findViewById(R.id.TXT_AVG_RATING);
+        TextView txtTotal = findViewById(R.id.TXT_TOTAL_REVIEWS);
+        if (txtAvg != null) txtAvg.setText(String.format("%.1f", avg));
+        if (txtTotal != null) txtTotal.setText("(" + reviewList.size() + " Đánh giá)");
+    }
+
+    private void showAddReviewDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_review, null);
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.CustomAlertDialog)
+                .setView(dialogView)
+                .create();
+
+        TextInputEditText edtComment = dialogView.findViewById(R.id.EDT_COMMENT_REVIEW);
+        android.widget.RatingBar ratingBar = dialogView.findViewById(R.id.RATING_BAR_SUBMIT);
+
+        dialogView.findViewById(R.id.BTN_SUBMIT_REVIEW).setOnClickListener(v -> {
+            String comment = edtComment.getText().toString().trim();
+            int rating = (int) ratingBar.getRating();
+            if (rating == 0) {
+                Toast.makeText(this, "Vui lòng chọn số sao", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            submitReview(rating, comment, dialog);
+        });
+
+        dialog.show();
+    }
+
+    private void submitReview(int rating, String comment, AlertDialog dialog) {
+        OkHttpClient client = new OkHttpClient();
+        JSONObject json = new JSONObject();
+        try {
+            json.put("station_name", tenTramHienTai);
+            json.put("username", loggedUsername);
+            json.put("rating", rating);
+            json.put("comment", comment);
+        } catch (Exception e) { e.printStackTrace(); }
+
+        RequestBody body = RequestBody.create(json.toString(), MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(SupabaseConfig.SUPABASE_URL + "/rest/v1/danhgia")
+                .addHeader("apikey", SupabaseConfig.SUPABASE_KEY)
+                .addHeader("Authorization", "Bearer " + SupabaseConfig.SUPABASE_KEY)
+                .addHeader("Content-Type", "application/json")
+                .post(body)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(() -> Toast.makeText(ChiTietTramSac.this, "Lỗi gửi đánh giá", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(ChiTietTramSac.this, "Cảm ơn bạn đã đánh giá! ❤️", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        loadReviews();
+                    });
+                } else {
+                    runOnUiThread(() -> Toast.makeText(ChiTietTramSac.this, "Lỗi: " + response.code(), Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
     }
 
     private void toggleLuuTram(Station s) {

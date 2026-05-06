@@ -59,4 +59,7 @@
         <item name="android:layout_marginVertical">8dp</item>
         <item name="android:background">#2D3038</item>
     </style>
+    <style name="CustomAlertDialog" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 </resources>

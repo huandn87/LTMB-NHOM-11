@@ -51,7 +51,7 @@ public class ChonModel extends AppCompatActivity {
         for (String modelName : models) {
             RelativeLayout row = new RelativeLayout(this);
             row.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.match_parent, 
+                    LinearLayout.LayoutParams.MATCH_PARENT, 
                     (int) (60 * getResources().getDisplayMetrics().density)));
             row.setPadding((int) (16 * getResources().getDisplayMetrics().density), 0, 0, 0);
 
@@ -79,7 +79,7 @@ public class ChonModel extends AppCompatActivity {
 
             View divider = new View(this);
             divider.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.match_parent, 1));
+                    LinearLayout.LayoutParams.MATCH_PARENT, 1));
             divider.setBackgroundColor(android.graphics.Color.parseColor("#2A2D39"));
 
             row.setOnClickListener(v -> {

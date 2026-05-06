@@ -108,13 +108,26 @@ public class TaoMatKhau extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String body = response.body() != null ? response.body().string() : "[]";
+                Log.d(TAG, "Check username response: " + body);
+                
                 try {
+                    // Supabase có thể trả về mảng [] hoặc đối tượng lỗi {}
+                    if (body.startsWith("{")) {
+                        JSONObject jsonObj = new JSONObject(body);
+                        String msg = jsonObj.optString("message", "Lỗi kiểm tra tài khoản");
+                        runOnUiThread(() -> Toast.makeText(TaoMatKhau.this, msg, Toast.LENGTH_SHORT).show());
+                        return;
+                    }
+
                     JSONArray arr = new JSONArray(body);
                     if (arr.length() > 0) {
                         // Username đã tồn tại
                         runOnUiThread(() -> {
                             TextInputEditText edtU = findViewById(R.id.EDT_USERNAME);
-                            if (edtU != null) edtU.setError("Tên đăng nhập đã được sử dụng");
+                            if (edtU != null) {
+                                edtU.setError("Tên đăng nhập đã được sử dụng");
+                                edtU.requestFocus();
+                            }
                             Toast.makeText(TaoMatKhau.this,
                                     "Tên đăng nhập \"" + username + "\" đã tồn tại, vui lòng chọn tên khác",
                                     Toast.LENGTH_LONG).show();
@@ -124,8 +137,8 @@ public class TaoMatKhau extends AppCompatActivity {
                         taoTaiKhoanMoi(username, password);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    runOnUiThread(() -> Toast.makeText(TaoMatKhau.this, "Lỗi xử lý dữ liệu", Toast.LENGTH_SHORT).show());
+                    Log.e(TAG, "Lỗi parse JSON kiểm tra: " + e.getMessage());
+                    runOnUiThread(() -> Toast.makeText(TaoMatKhau.this, "Lỗi xác thực dữ liệu", Toast.LENGTH_SHORT).show());
                 }
             }
         });
@@ -202,14 +215,18 @@ public class TaoMatKhau extends AppCompatActivity {
                     });
                 } else {
                     // Xử lý lỗi cụ thể từ Supabase
-                    String errorMsg = "Tạo tài khoản thất bại";
+                    String errorMsg = "Tạo tài khoản thất bại (Code: " + response.code() + ")";
                     try {
-                        JSONObject err = new JSONObject(responseBody);
-                        String hint = err.optString("hint", "");
-                        String message = err.optString("message", "");
-                        if (!hint.isEmpty()) errorMsg = hint;
-                        else if (!message.isEmpty()) errorMsg = message;
-                    } catch (Exception ignored) {}
+                        if (!responseBody.isEmpty()) {
+                            JSONObject err = new JSONObject(responseBody);
+                            String message = err.optString("message", "");
+                            String details = err.optString("details", "");
+                            if (!message.isEmpty()) errorMsg = message;
+                            else if (!details.isEmpty()) errorMsg = details;
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing error response: " + e.getMessage());
+                    }
 
                     final String finalError = errorMsg;
                     runOnUiThread(() -> Toast.makeText(TaoMatKhau.this, finalError, Toast.LENGTH_LONG).show());
