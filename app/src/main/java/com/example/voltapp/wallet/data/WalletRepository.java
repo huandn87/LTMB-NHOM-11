@@ -1,7 +1,5 @@
 package com.example.voltapp.wallet.data;
 
-import com.example.voltapp.R;
-
 import android.util.Log;
 
 import com.example.voltapp.R;
@@ -30,17 +28,37 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class WalletRepository {
 
-    private final AtomicLong idGenerator = new AtomicLong(System.currentTimeMillis());
+    // Dữ liệu ví cần được giữ nguyên trong suốt lượt chạy app.
+    // Vì WalletFeatureActivity có thể được tạo lại khi chuyển tab/tài khoản,
+    // nếu dùng biến thường thì số dư và lịch sử sẽ bị reset.
+    // Dùng static để dữ liệu tồn tại trong RAM cho đến khi app bị tắt hoàn toàn.
+    private static final AtomicLong idGenerator = new AtomicLong(System.currentTimeMillis());
 
-    private List<PaymentMethod> paymentMethods = new ArrayList<>();
-    private final List<WalletTransaction> transactions = new ArrayList<>();
-    private long balance = 100_000L;
+    private static List<PaymentMethod> paymentMethods = new ArrayList<>();
+    private static final List<WalletTransaction> transactions = new ArrayList<>();
+    private static long balance = 100_000L;
+    private static boolean defaultDataInitialized = false;
 
     public WalletRepository() {
+        initDefaultPaymentMethodsIfNeeded();
+        initDefaultTransactionsIfNeeded();
+    }
+
+    private void initDefaultPaymentMethodsIfNeeded() {
+        if (!paymentMethods.isEmpty()) {
+            return;
+        }
+
         paymentMethods.add(new PaymentMethod("zalopay", "ZaloPay", "Ví liên kết nhanh", "ZP", R.color.badge_zalopay, R.drawable.ic_zalopay));
         paymentMethods.add(new PaymentMethod("visa", "Thẻ Visa", "Thẻ tín dụng / ghi nợ", "VS", R.color.badge_visa, R.drawable.ic_visa));
         paymentMethods.add(new PaymentMethod("viettel_money", "Viettel Money", "Nạp nhanh từ tài khoản viễn thông", "VT", R.color.badge_viettel, R.drawable.ic_viettel_money));
         paymentMethods.add(new PaymentMethod("momo", "MoMo", "Ví điện tử phổ biến", "MM", R.color.badge_momo, R.drawable.ic_momo));
+    }
+
+    private void initDefaultTransactionsIfNeeded() {
+        if (defaultDataInitialized) {
+            return;
+        }
 
         transactions.add(new WalletTransaction(
                 idGenerator.incrementAndGet(),
@@ -66,6 +84,8 @@ public class WalletRepository {
                 TransactionType.DEBIT,
                 "05/12/2025 - 10:00"
         ));
+
+        defaultDataInitialized = true;
     }
 
     public long getBalance() {
