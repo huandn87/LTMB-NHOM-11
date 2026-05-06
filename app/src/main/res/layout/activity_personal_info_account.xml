@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#191B21" android:fillViewport="true">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent">
+<ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:background="#191B21" android:fillViewport="true">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp" android:paddingTop="44dp">
-        <LinearLayout android:layout_width="match_parent" android:layout_height="56dp" android:gravity="center_vertical" android:orientation="horizontal"><TextView android:id="@+id/btn_back_personal" android:layout_width="44dp" android:layout_height="44dp" android:gravity="center" android:text="‹" android:textColor="#FFFFFF" android:textSize="36sp"/><TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Thông tin cá nhân" android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold"/><TextView android:layout_width="44dp" android:layout_height="44dp" android:gravity="center" android:text="✎" android:textColor="#FFFFFF" android:textSize="24sp"/></LinearLayout>
+        <LinearLayout android:layout_width="match_parent" android:layout_height="56dp" android:gravity="center_vertical" android:orientation="horizontal"><TextView android:id="@+id/btn_back_personal" android:layout_width="44dp" android:layout_height="44dp" android:gravity="center" android:text="‹" android:textColor="#FFFFFF" android:textSize="36sp"/><TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Thông tin cá nhân" android:textColor="#FFFFFF" android:textSize="22sp" android:textStyle="bold"/><TextView android:id="@+id/btn_edit_personal" android:layout_width="44dp" android:layout_height="44dp" android:gravity="center" android:text="✎" android:textColor="#FFFFFF" android:textSize="24sp"/></LinearLayout>
         <ImageView android:layout_width="96dp" android:layout_height="96dp" android:layout_gravity="center_horizontal" android:layout_marginTop="20dp" android:src="@drawable/avatar"/>
-        <TextView style="@style/InfoLabel" android:text="Họ và tên"/><TextView style="@style/InfoValue" android:text="Nguyễn Văn A"/>
-        <TextView style="@style/InfoLabel" android:text="Email"/><TextView style="@style/InfoValue" android:text="nguyenvana@gmail.com"/>
-        <TextView style="@style/InfoLabel" android:text="Số điện thoại"/><TextView style="@style/InfoValue" android:text="+84 779 497 860"/>
-        <TextView style="@style/InfoLabel" android:text="Giới tính"/><TextView style="@style/InfoValue" android:text="Nam                                      ✓"/>
-        <TextView style="@style/InfoLabel" android:text="Ngày sinh"/><TextView style="@style/InfoValue" android:text="24/01/2004                              ▣"/>
+        <TextView style="@style/InfoLabel" android:text="Họ và tên"/><TextView android:id="@+id/tv_name_personal" style="@style/InfoValue" android:text="..."/>
+        <TextView style="@style/InfoLabel" android:text="Email"/><TextView android:id="@+id/tv_email_personal" style="@style/InfoValue" android:text="..."/>
+        <TextView style="@style/InfoLabel" android:text="Số điện thoại"/><TextView android:id="@+id/tv_phone_personal" style="@style/InfoValue" android:text="..."/>
+        <TextView style="@style/InfoLabel" android:text="Giới tính"/><TextView android:id="@+id/tv_gender_personal" style="@style/InfoValue" android:text="..."/>
+        <TextView style="@style/InfoLabel" android:text="Ngày sinh"/><TextView style="@style/InfoValue" android:text="Chưa cập nhật"/>
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="20dp"><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Hạng khách hàng\n●  Bạc" android:textColor="#FFFFFF" android:textSize="15sp"/><TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Nhóm khách hàng\n●  VIP" android:textColor="#FFFFFF" android:textSize="15sp"/></LinearLayout>
     </LinearLayout>
 </ScrollView>
+    <ProgressBar
+        android:id="@+id/progress_bar_personal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+</FrameLayout>

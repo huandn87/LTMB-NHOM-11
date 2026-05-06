@@ -76,10 +76,10 @@ public class TaiKhoanActivity extends AppCompatActivity {
             rowPayment.setOnClickListener(v -> startActivity(new Intent(this, WalletFeatureActivity.class)));
         }
 
-        // 3. Thông tin cá nhân -> HoanThienHoSo
+        // 3. Thông tin cá nhân -> PersonalInfoActivity
         View rowProfile = findViewById(R.id.row_profile);
         if (rowProfile != null) {
-            rowProfile.setOnClickListener(v -> startActivity(new Intent(this, HoanThienHoSo.class)));
+            rowProfile.setOnClickListener(v -> startActivity(new Intent(this, PersonalInfoActivity.class)));
         }
 
         // 4. Đăng xuất -> DangNhap
