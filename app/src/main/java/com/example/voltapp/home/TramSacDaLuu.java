@@ -60,7 +60,12 @@ public class TramSacDaLuu extends AppCompatActivity {
     }
 
     private void loadSavedStations() {
-        SharedPreferences pref = getSharedPreferences("SAVED_STATIONS", Context.MODE_PRIVATE);
+        // Lấy username để phân tách trạm sạc đã lưu theo tài khoản
+        SharedPreferences userPrefs = getSharedPreferences("evcharge_prefs", Context.MODE_PRIVATE);
+        String loggedUsername = userPrefs.getString("username", "Khách");
+
+        // Sử dụng tên file SharedPreferences riêng cho từng user
+        SharedPreferences pref = getSharedPreferences("SAVED_STATIONS_" + loggedUsername, Context.MODE_PRIVATE);
         String json = pref.getString("STATIONS_LIST", "[]");
         Gson gson = new Gson();
         java.lang.reflect.Type listType = new TypeToken<ArrayList<Station>>(){}.getType();

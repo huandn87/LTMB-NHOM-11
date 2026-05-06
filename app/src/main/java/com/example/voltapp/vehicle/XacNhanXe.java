@@ -7,6 +7,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.voltapp.R;
 import com.google.android.material.button.MaterialButton;
+import com.example.voltapp.account.MyCarsActivity;
 import com.example.voltapp.home.ManHinhChinh;
 
 import android.app.ProgressDialog;
@@ -97,7 +98,10 @@ public class XacNhanXe extends AppCompatActivity {
                 public void onSuccess(String jsonResponse) {
                     runOnUiThread(() -> {
                         pd.dismiss();
-                        startActivity(new Intent(XacNhanXe.this, ManHinhChinh.class));
+                        Intent intent = new Intent(XacNhanXe.this, MyCarsActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
                     });
                 }
 

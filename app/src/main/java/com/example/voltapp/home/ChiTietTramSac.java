@@ -223,7 +223,8 @@ public class ChiTietTramSac extends AppCompatActivity {
     }
 
     private void toggleLuuTram(Station s) {
-        SharedPreferences pref = getSharedPreferences("SAVED_STATIONS", Context.MODE_PRIVATE);
+        // Sử dụng SharedPreferences riêng cho từng username để phân tách dữ liệu
+        SharedPreferences pref = getSharedPreferences("SAVED_STATIONS_" + loggedUsername, Context.MODE_PRIVATE);
         String json = pref.getString("STATIONS_LIST", "[]");
         Gson gson = new Gson();
         java.lang.reflect.Type listType = new TypeToken<ArrayList<Station>>(){}.getType();

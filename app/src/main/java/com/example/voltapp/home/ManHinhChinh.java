@@ -52,11 +52,16 @@ public class ManHinhChinh extends AppCompatActivity implements OnMapReadyCallbac
     private TextView txtTenTram, txtDiaChi, txtTrangThai, txtKhoangCach;
     
     private Station selectedStation = null;
+    private String loggedUsername = "Khách";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_man_hinh_chinh);
+
+        // Lấy thông tin username
+        SharedPreferences prefs = getSharedPreferences("evcharge_prefs", MODE_PRIVATE);
+        loggedUsername = prefs.getString("username", "Khách");
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) mapFragment.getMapAsync(this);
@@ -128,7 +133,8 @@ public class ManHinhChinh extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void toggleLuuTram(Station s) {
-        SharedPreferences pref = getSharedPreferences("SAVED_STATIONS", Context.MODE_PRIVATE);
+        // Sử dụng SharedPreferences riêng cho từng username để phân tách dữ liệu
+        SharedPreferences pref = getSharedPreferences("SAVED_STATIONS_" + loggedUsername, Context.MODE_PRIVATE);
         String json = pref.getString("STATIONS_LIST", "[]");
         Gson gson = new Gson();
         java.lang.reflect.Type listType = new TypeToken<ArrayList<Station>>(){}.getType();
